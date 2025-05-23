@@ -1,0 +1,38 @@
+<head>
+    <meta> charset="utf-8">
+    <title>
+
+        {% block title %}My Django App
+        {% endblock %}
+        
+    </title>
+</head>
+
+<body>
+    <header>
+        <div id ="logotipo">
+            <img src="{% static 'imagenes/logo.png' %}" >
+             <h1>Sitio WEB</h1>
+
+        </div>
+    </header>
+   
+    <nav>
+        <ul>
+            <li><a href="/inicio">Inicio</a></li>
+            <li><a href="/hola-mundo">hola-mundo</a></li>
+            <li><a href="pagina.html">Contacto</a></li>
+            <li><a href="">Blog</a></li>
+        </ul>
+    </nav>
+    <div class="barra">
+        <span class="esquina-izquierda"></span>
+        <span class="relleno-barra"></span>
+        <span class="esquina-derecha"></span>
+    </div>
+    <div id="contenido">
+        <h2 class="title"></h2>Contenido</h2>
+        {% block content %}
+        {% endblock %}
+
+</body>
