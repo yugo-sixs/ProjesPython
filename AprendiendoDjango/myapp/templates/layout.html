@@ -31,8 +31,17 @@
         <span class="esquina-derecha"></span>
     </div>
     <div id="contenido">
-        <h2 class="title"></h2>Contenido</h2>
-        {% block content %}
-        {% endblock %}
 
+        <div class="box">
+            <h2 class="title"></h2>Contenido</h2>
+            {% block content %}
+                <strong>Contenido del Bloque original</strong>
+            {% endblock %}
+        </div>
+
+        
+
+        <footer>
+            pagina creada por <a href="tu servilleta  ">tu servilleta</a>
+        </footer>
 </body>
