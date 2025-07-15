@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+
+{% block title %}Editar Usuario{% endblock %}
+
+{% block subtitle %}Editar datos del usuario{% endblock %}
+
+{% block content %}
+<form method="POST" action="">
+    {% csrf_token %}
+    <p>
+        <label>Username:</label><br>
+        <input type="text" name="username" value="{{ usuario.username }}" required>
+    </p>
+    <p>
+        <label>Password:</label><br>
+        <input type="password" name="password" value="{{ usuario.password }}" required>
+    </p>
+    <p>
+        <label>Copmprovar Password:</label><br>
+        <input type="password1" name="password1" value="{{ usuario.password }}" required>
+    </p>
+    <p>
+        <label>Rol:</label><br>
+        <input type="text" name="rol" value="{{ usuario.rol }}" required>
+    </p>
+
+    <p>
+        <button type="submit">Guardar Cambios</button>
+    </p>
+</form>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <title>{% block title %}Citas Médicas{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+
+<body>
+    <header>
+        <div id="logotipo">
+            <h1>Citas Medicas</h1>
+        </div>
+    </header>
+
+    <nav>
+        <div class="container">
+            <ul>
+                <li><a href="/">Inicio</a></li>
+                <li><a href="/usuarios/crear/">Crear Usuario</a></li>
+                <li><a href="#">Blog</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="barra">
+        <span class="esquina-izquierda"></span>
+        <span class="relleno-barra"></span>
+        <span class="esquina-derecha"></span>
+    </div>
+
+    <div id="content">
+        <div class="box">
+            <h2 class="title">{% block subtitle %}Bienvenido{% endblock %}</h2>
+            {% block content %}
+            <p>Contenido principal aquí</p>
+            {% endblock %}
+        </div>
+    </div>
+
+    <footer>
+        Página creada por <a href="#">tu servilleta</a>
+    </footer>
+</body>
+
+</html>
