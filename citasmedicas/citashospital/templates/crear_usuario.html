@@ -1,31 +1,43 @@
 {% extends "layout.html" %}
 
-{% block title %}Editar Usuario{% endblock %}
+{% block title %}Crear Usuario{% endblock %}
 
-{% block subtitle %}Editar datos del usuario{% endblock %}
+{% block subtitle %}Formulario para crear usuario{% endblock %}
 
 {% block content %}
+
+{% if error %}
+<div style="color:red;">{{ error }}</div>
+{% endif %}
+
+{% if success %}
+<div style="color:green;">{{ success }}</div>
+{% endif %}
+
 <form method="POST" action="">
     {% csrf_token %}
     <p>
         <label>Username:</label><br>
-        <input type="text" name="username" value="{{ usuario.username }}" required>
-    </p>
+        <input type="text" name="username" value="{{ username|default:'' }}" required>
     <p>
         <label>Password:</label><br>
-        <input type="password" name="password" value="{{ usuario.password }}" required>
+        <input type="password" name="password" value="{{ usuario.password|default:'' }}" required>
     </p>
     <p>
-        <label>Copmprovar Password:</label><br>
-        <input type="password1" name="password1" value="{{ usuario.password }}" required>
+        <label>Comprobar Password:</label><br>
+        <input type="password1" name="password1" value="{{ usuario.password|default:'' }}" required>
     </p>
     <p>
         <label>Rol:</label><br>
-        <input type="text" name="rol" value="{{ usuario.rol }}" required>
+        <select name="rol">
+            <option value="admin" {% if is_admin %}selected{% endif %}>Admin</option>
+            <option value="Doctor" {% if is_user %}selected{% endif %}>Doctor</option>
+            <option value="secretaria" {% if is_user %}selected{% endif %}>Secretaria</option>
+        </select>
     </p>
 
     <p>
-        <button type="submit">Guardar Cambios</button>
+        <button type="submit">Guardar </button>
     </p>
 </form>
 {% endblock %}

@@ -208,3 +208,22 @@ form button {
 form button:hover {
     background: #279566;
 }
+
+p button {
+    padding: 10px;
+    width: 100%;
+    max-width: 150px;
+    background: #2ba977;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+p {
+    text-align: center;
+}
+
+p input {
+    width: 80%;
+    max-width: 170px;
+}

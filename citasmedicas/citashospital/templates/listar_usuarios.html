@@ -1,3 +1,4 @@
+<!--template/listar_usuario.html-->
 {% extends "layout.html" %}
 
 {% block title %}Lista de Usuarios{% endblock %}
@@ -10,7 +11,9 @@
         <tr>
             <th>ID</th>
             <th>Username</th>
+            <th>Contraseña</th>
             <th>Rol</th>
+            <th>Estatus</th>
             <th>Acciones</th>
         </tr>
     </thead>
@@ -19,10 +22,20 @@
         <tr>
             <td>{{ usuario.id }}</td>
             <td>{{ usuario.username }}</td>
+            <td>{{usuario.password}}</td>
+            <!--<td>
+                {%if usuario.password%}
+                <span style="color: red;">******</span>
+                {% else %}
+                <span style="color: green;">No disponible</span>
+                {% endif %}
+
+            </td>-->
             <td>{{ usuario.rol }}</td>
-            <td>
-                <a href="/usuarios/editar/{{ usuario.id }}/">Editar</a>
-            </td>
+            <td></td>
+            <td><a href="{% url 'editar_usuario' usuario.id %}">Editar</a></td>
+
+
         </tr>
         {% empty %}
         <tr>

@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+
+{% block title %}Crear Cita{% endblock %}
+
+{% block subtitle %}Formulario para crear Citas{% endblock %}
+
+{% block content %}
+
+{% if error %}
+<div style="color:red;">{{ error }}</div>
+{% endif %}
+
+{% if success %}
+<div style="color:green;">{{ success }}</div>
+{% endif %}
+
+
+
+
+
+
+{% endblock %}
