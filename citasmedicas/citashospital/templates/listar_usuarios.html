@@ -6,6 +6,13 @@
 {% block subtitle %}Lista de Usuarios Registrados{% endblock %}
 
 {% block content %}
+{% if messages %}
+{% for message in messages %}
+<div class="alert alert-{{ message.tags }}">
+    {{ message }}
+</div>
+{% endfor %}
+{% endif %}
 <table border="1" cellpadding="5" cellspacing="0" style="width:100%; background:#fff; border-collapse: collapse;">
     <thead style="background:#2ba977; color:#fff;">
         <tr>
@@ -33,7 +40,11 @@
             </td>-->
             <td>{{ usuario.rol }}</td>
             <td></td>
-            <td><a href="{% url 'editar_usuario' usuario.id %}">Editar</a></td>
+            <td><a href="{% url 'editar_usuario' usuario.id %}">Editar</a>
+                |
+                <a href="{% url 'desactivar_usuario' usuario.id %}"
+                    onclick="return confirm('¿Seguro que deseas deshabilitar este usuario?');">Deshabilitar</a>
+            </td>
 
 
         </tr>
@@ -44,4 +55,6 @@
         {% endfor %}
     </tbody>
 </table>
-{% endblock %}
+<a href="{% url 'listar_usuarios' %}">Volver a la lista</a>
+<form method="POST" action="{% url 'crear_usuario' %}">
+    {% endblock %}

@@ -12,40 +12,41 @@
 {% for message in messages %}
 <div class="alert alert-{{ message.tags }}">
     {{ message }}
-    {% endfor %}
-    {% endif %}
+</div>
+{% endfor %}
+{% endif %}
 
-    <div class="box">
-        <h2 class="title">Editar Usuario</h2>
+<div class="box">
+    <h2 class="title">Editar Usuario</h2>
 
-        <form method="POST">
-            {% csrf_token %}
-            <p>
-                <label>Usuario:</label><br>
-                <input type="text" name="username" value="{{ usuario.username }}" required><br><br>
-            </p>
+    <form method="POST">
+        {% csrf_token %}
+        <p>
+            <label>Usuario:</label><br>
+            <input type="text" name="username" value="{{ usuario.username }}" required><br><br>
+        </p>
 
-            <p>
-                <label>Contraseña:</label><br>
-                <input type="password" name="password" value="{{ usuario.password|default:'' }}" required><br><br>
-            </p>
+        <p>
+            <label>Contraseña:</label><br>
+            <input type="password" name="password" value="{{ usuario.password|default:'' }}" required><br><br>
+        </p>
 
-            <p>
-                <label>Rol:</label><br>
-                <select name="rol">
-                    {% for rol in roles %}
-                    <option value="{{ rol }}" {% if usuario.rol==rol %}selected{% endif %}>{{ rol|capfirst }}</option>
-                    {% endfor %}
-                </select>>
+        <p>
+            <label>Rol:</label><br>
+            <select name="rol">
+                {% for rol in roles %}
+                <option value="{{ rol.id }}" {% if usuario.rol_id == rol.id %}selected{% endif %}>
+                    {{ rol.nombre|capfirst }}
+                </option>
+                {% endfor %}
+            </select>
+        </p>
 
-            </p>
+        <p>
+            <button type="submit">Guardar Cambios</button>
+        </p>
+    </form>
 
-            <p>
-                <button type="submit">Guardar Cambios</button>
-            </p>
-        </form>
-
-        <a href="{% url 'listar_usuarios' %}">Volver a la lista</a>
-    </div>
-
+    <a href="{% url 'listar_usuarios' %}">Volver a la lista</a>
     {% endblock %}
+</div>

@@ -15,7 +15,65 @@
 {% endif %}
 
 
+<form method="POST" action="">
 
+    {% csrf_token %}
+    <table>
+        <tr>
+            
+            <td>
+                <p>
+                    <label>Fecha:</label><br>
+                    <input type="date" name="fecha" required>
+                </p>
+            </td>
+            <td>
+                <p>
+                    <label>Hora:</label><br>
+                    <input type="time" name="hora" required>
+                </p>
+            </td>
+            <td>
+               <p>
+                    <label>Tipo de Cita:</label><br>
+                    <select name="tipo_cita">
+                        <option value="consulta">Consulta</option>
+                        <option value="seguimiento">Seguimiento</option>
+                        <option value="emergencia">Emergencia</option>
+                    </select>
+               </p>
+                    
+            </td>
+            <td>            
+                <p>
+                    <label>Motivo:</label><br>
+                    <input type="text" name="motivo" required>  
+                </p>
+            </td>
+            <td>
+                <p>
+                    <label>Paciente:</label><br>
+                    <select name="paciente_id">
+                    {% for paciente in pacientes %}
+                    <option value="{{ paciente.id }}">{{ paciente.nombre }}</option>
+                    {% endfor %}
+                </p>
+            </td>
+            <td>
+                <p>
+                    <label>Doctor:</label><br>
+                    <select name="doctor_id">
+                        {% for doctor in doctores %}
+                        <option value="{{ doctor.id }}">{{ doctor.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </p>
+            </td>
+        </tr>
+    </table>          
+    <p>
+        <button type="submit">Guardar Cita</button>
+    </p>
 
 
 

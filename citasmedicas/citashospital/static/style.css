@@ -227,3 +227,19 @@ p input {
     width: 80%;
     max-width: 170px;
 }
+
+p input[type="date"] {
+    width: 100px;   /* ancho más pequeño */
+    padding: 4px;   /* espacio interno */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-right: 10px;
+}
+ p input[type="time"] {
+    width: 80px;    /* ancho más pequeño */
+    padding: 4px;   /* espacio interno */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-right: 10px;
+ }
+

@@ -18,21 +18,29 @@
     {% csrf_token %}
     <p>
         <label>Username:</label><br>
-        <input type="text" name="username" value="{{ username|default:'' }}" required>
+        <input type="text" name="username" required>
     <p>
         <label>Password:</label><br>
-        <input type="password" name="password" value="{{ usuario.password|default:'' }}" required>
+        <input type="password" name="password" required>
     </p>
     <p>
         <label>Comprobar Password:</label><br>
-        <input type="password1" name="password1" value="{{ usuario.password|default:'' }}" required>
+        <input type="password" name="password1" required>
     </p>
     <p>
         <label>Rol:</label><br>
         <select name="rol">
-            <option value="admin" {% if is_admin %}selected{% endif %}>Admin</option>
-            <option value="Doctor" {% if is_user %}selected{% endif %}>Doctor</option>
-            <option value="secretaria" {% if is_user %}selected{% endif %}>Secretaria</option>
+            {% for rol  in roles %}
+            <option value="{{ rol.id }}">{{ rol.nombre|capfirst }}</option>
+            {% endfor %}
+            {% if messages %}
+            <ul>
+                {% for message in messages %}
+                <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+
         </select>
     </p>
 

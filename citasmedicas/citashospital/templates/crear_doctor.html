@@ -1,0 +1,85 @@
+{% extends "layout.html" %}
+
+{% block title %}Crear Doctor{% endblock %}
+
+{% block subtitle %}Formulario para crear Doctores{% endblock %}
+
+{% block content %}
+
+    <form method="POST">
+        {% csrf_token %}
+        <table>
+            <tr>
+                <td>
+                    <p>
+                        <label>Nombre:</label><br>
+                        <input type="text" name="nombre" required>
+                    </p>
+                </td>
+                <td>
+                    <p>
+                        <label>Especialidad:</label><br>
+                        <select name="especialidad">
+                            {%for especialidad in especialidades %}
+                            <option value="{{ especialidad.id }}">{{ especialidad.nombre }}</option>
+                            {% endfor %}
+                            
+                        </select>
+                    </p>
+                </td>
+                <td>
+                    <p>
+                        <label">Cedula Profecional</label><br>
+                        <input type="text" name="cedula" required>
+                    </p>
+                </td>
+                <td>
+                    <p>
+                        <label>Teléfono:</label><br>
+                        <input type="text" name="telefono" required>
+                    </p>
+                </td>
+                <td>
+                    <p>
+                        <label>Email:</label><br>
+                        <input type="email" name="email" required>
+                    </p>
+                </td>                
+            </tr>            
+        </table>        
+        <p>
+            <button type="submit">Crear Doctor</button>
+        </p>
+    </form>
+    
+    <H3>Listado de Doctores</H3>
+   
+
+        <table border="1" cellpadding="5">
+            <tr>
+                <th>Nombre</th>
+                <th>Especialidad</th>
+                <th>Cédula</th>
+                <th>Teléfono</th>
+                <th>Email</th>
+                <th>Opciones</th>
+            </tr>
+            <tr> 
+                {%for doctor in doctores %}
+                <td>{{doctor.nombre}} </td>
+                <td>{{doctor.especialidad}}</td>
+                <td>{{doctor.cedula_profesional}}</td>
+                <td>{{doctor.telefono}}</td>
+                <td>{{doctor.correo}}</td>
+                <td><p>Editar</p><p>Eliminar</p></td>
+            </tr>
+
+            {%empty%} 
+            <tr>
+                <td colspan="5">No hay doctores registrados.</td>
+            </tr>
+            {% endfor %}              
+        </table> 
+      
+    
+{% endblock %}
