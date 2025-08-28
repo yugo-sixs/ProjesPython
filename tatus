@@ -1,0 +1,70 @@
+[33mcommit 95a7254cca14fd0c3f0d5a049f0f8d710cc429dd[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: yugo <yougozerosixs@gmail.com>
+Date:   Thu Aug 28 09:21:52 2025 -0600
+
+    Actualización de urls, views y reestructuración de carpeta formula
+
+[33mcommit 58899322ea528d7701c97f133bd11cdc15b6f9fb[m
+Author: yugo <yougozerosixs@gmail.com>
+Date:   Fri Jul 25 13:49:33 2025 -0600
+
+    Elimina archivo grande y actualiza .gitignore
+
+[33mcommit 27ae96519d1cbf7d63bcf37716fd4d118287f8d4[m
+Author: yugo <yougozerosixs@gmail.com>
+Date:   Fri Jul 25 13:45:34 2025 -0600
+
+    Agrega nuevas plantillas y vistas, incluye ejecutable de formulaV3
+
+[33mcommit d02d0950b716e8cb28b0c89c96cfd1e56c7951a9[m
+Author: yugosixs <yougozerosixs@gmail.com>
+Date:   Tue Jul 15 12:16:18 2025 -0600
+
+    Sí, es recomendable que reinicies Visual Studio Code para que los cambios en setup.cfg sean detectados por las extensiones de linting (como flake8).
+    
+    **Pasos recomendados:**
+    
+    1. Guarda todos tus archivos.
+    2. Cierra y vuelve a abrir Visual Studio Code.
+    3. Abre de nuevo tu proyecto y revisa si el error de longitud de línea desapareció.
+    
+    Si el error persiste:
+    - Asegúrate de que flake8 esté instalado en el entorno que usa VS Code.
+    - Verifica que no tengas otro archivo de configuración (como `.flake8`) con un valor diferente de `max-line-length`.
+    - Ejecuta en la terminal:
+      ```
+      flake8 --max-line-length=120
+      ```
+      para probar manualmente.
+    
+    Con esto, tu configuración debería aplicarse correctamente.
+
+[33mcommit 1ac93305debfcff95824f8dc6f611df00f898d64[m
+Author: yugosixs <yougozerosixs@gmail.com>
+Date:   Wed May 28 14:21:31 2025 -0600
+
+    Actualiza cambios de mircoles
+
+[33mcommit 2dee4528939e9fc626e4aa62fbbc4cf2ef59594c[m
+Author: yugosixs <yougozerosixs@gmail.com>
+Date:   Wed May 28 14:16:17 2025 -0600
+
+    Guarda todos los cambios realizados 28/05/25
+
+[33mcommit ceb5c66e0581f8016cb7b8520f08def1395306a5[m
+Author: yugosixs <yougozerosixs@gmail.com>
+Date:   Wed May 28 11:59:03 2025 -0600
+
+    Guarda todos los cambios realizados
+
+[33mcommit 0a16a1b04a460a1331fe05a361c90f406e5860fd[m
+Author: yugosixs <yougozerosixs@gmail.com>
+Date:   Wed May 28 11:54:22 2025 -0600
+
+    Actualiza rutas en urls.py
+
+[33mcommit d79dcf3a7e19b53be7cb19a59523b7e659f8b92f[m
+Author: yugosixs <yougozerosixs@gmail.com>
+Date:   Fri May 23 13:20:16 2025 -0600
+
+    cambiosVienes
