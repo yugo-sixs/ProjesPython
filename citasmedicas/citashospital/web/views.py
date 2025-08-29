@@ -317,12 +317,13 @@ def crear_doctor(request):
         cedula = request.POST["cedula"]
         telefono = request.POST["telefono"]
         correo = request.POST["email"]   # ahora coincide con el formulario
+        usuario_id= request.POST["usuario"]
 
         with connection.cursor() as cursor:
             cursor.execute("""
-                INSERT INTO doctor (nombre, especialidad_id, cedula_profesional, telefono, correo)
+                INSERT INTO doctor (nombre, especialidad_id, cedula_profesional, telefono, correo,usuario_id)
                 VALUES (%s, %s, %s, %s, %s)
-            """, [nombre, especialidad_id, cedula, telefono, correo])
+            """, [nombre, especialidad_id, cedula, telefono, correo,usuario_id])
 
     # Traer especialidades
     with connection.cursor() as cursor:
@@ -330,66 +331,80 @@ def crear_doctor(request):
         especialidades = cursor.fetchall()
     especialidades = [{'id': e[0], 'nombre': e[1]} for e in especialidades]
 
+    # Traer usuarios
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT id, username FROM usuario WHERE estatus_id=1")
+        usuarios = cursor.fetchall()    
+    usuarios = [{'id': u[0], 'nombre': u[1]} for u in usuarios]
+
     # Traer doctores
     with connection.cursor() as cursor:
         cursor.execute("""
-            SELECT d.nombre, e.nombre, d.cedula_profesional, d.telefono, d.correo
+            SELECT d.id, d.nombre, e.nombre, d.cedula_profesional, d.telefono, d.correo
             FROM doctor d
             JOIN especialidad e ON d.especialidad_id = e.id
+            WHERE d.estatus_id = 1
         """)
         doctores = cursor.fetchall()
+
     doctores = [
-        {"nombre": d[0], "especialidad": d[1], "cedula_profesional": d[2], "telefono": d[3], "correo": d[4]}
+        {
+            "id": d[0],
+            "nombre": d[1],
+            "especialidad": d[2],
+            "cedula_profesional": d[3],
+            "telefono": d[4],
+            "correo": d[5]
+        }
         for d in doctores
     ]
 
     return render(request, "crear_doctor.html", {
         "especialidades": especialidades,
+        "usuarios": usuarios,
         "doctores": doctores
     })
 
 
-def editar_doctor(request, doctor_id):
-    
+def editar_doctor(request, id):
     with connection.cursor() as cursor:
         cursor.execute("""
-            SELECT id, nombre, especialidad_id, cedula_profesional, telefono, correo
-            FROM doctor
-            WHERE id=%s
-        """, [doctor_id])
-        row = cursor.fetchone()
-    if not row:
-        messages.error(request, "Doctor no encontrado.")
-        return redirect('crear_doctor') 
-    doctor = {
-        'id': row[0],
+                        SELECT d.nombre, e.nombre, d.cedula_profesional, d.telefono, d.correo
+                        FROM doctor d
+                        JOIN especialidad e ON d.especialidad_id = e.id
+                       """)
+        doctor = cursor.fetchone()
 
-        'nombre': row[1],
-        'especialidad_id': row[2],
-        'cedula_profesional': row[3],
-        'telefono': row[4],
-        'correo': row[5],
+    if not doctor:
+        messages.error(request, "Doctor no encontrado")
+        return redirect("crear_doctor")
+
+    # Convertir a dict para pasar al template
+    doctor_data = {
+        "id": doctor[0],
+        "nombre": doctor[1],
+        "apellido": doctor[2],
+        "cedula_profesional": doctor[3],
+        "usuario_id": doctor[4],
+        "especialidad_id": doctor[5],
     }
-    # Obtener lista de especialidades para el formulario
+
+    # Vuelves a cargar combos
     with connection.cursor() as cursor:
         cursor.execute("SELECT id, nombre FROM especialidad")
-        especialidades = cursor.fetchall()
-        especialidades = [{'id': e[0], 'nombre': e[1]} for e in especialidades]
-        
-    if request.method == 'POST':
-        nombre = request.POST.get('nombre', '').strip()
-        especialidad_id = request.POST.get('especialidad', '').strip()
-        cedula = request.POST.get('cedula', '').strip()
-        telefono = request.POST.get('telefono', '').strip()
-        correo = request.POST.get('email', '').strip()
-        if not nombre or not especialidad_id or not cedula or not telefono or not correo:
-            messages.error(request, "⚠ Todos los campos son obligatorios.")
-            return render(request, 'editar_doctor.html', {'doctor': doctor, 'especialidades': especialidades})
-        with connection.cursor() as cursor:
-            cursor.execute("""
-                UPDATE doctor
-                SET nombre=%s, especialidad_id=%s, cedula_profesional=%s, telefono=%s, correo=%s
-                WHERE id=%s
-            """, [nombre, especialidad_id, cedula, telefono, correo, doctor_id])
-        messages.success(request, "Doctor actualizado correctamente.")
-        return redirect('crear_doctor')
+        especialidades = [{'id': e[0], 'nombre': e[1]} for e in cursor.fetchall()]
+
+        cursor.execute("SELECT id, username FROM usuario WHERE estatus_id = %s", [1])
+        usuarios = [{'id': u[0], 'username': u[1]} for u in cursor.fetchall()]
+
+    return render(request, "crear_doctor.html", {
+        "doctor": doctor_data,
+        "especialidades": especialidades,
+        "usuarios": usuarios,
+    })
+
+def eliminar_doctor(request, id):
+    with connection.cursor() as cursor:
+        cursor.execute("UPDATE doctor SET estatus_id = %s WHERE id = %s", [2, id])
+    messages.success(request, "Doctor eliminado correctamente.")
+    return redirect("crear_doctor")

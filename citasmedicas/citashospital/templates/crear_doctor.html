@@ -5,8 +5,10 @@
 {% block subtitle %}Formulario para crear Doctores{% endblock %}
 
 {% block content %}
-
-    <form method="POST">
+    <h3>Crear Doctor</h3>
+     <!-- Mostrar mensajes flash de Django -->
+    
+    <form method="POST" action="{% url 'crear_doctor' %}">
         {% csrf_token %}
         <table>
             <tr>
@@ -44,6 +46,17 @@
                         <label>Email:</label><br>
                         <input type="email" name="email" required>
                     </p>
+                </td>
+                <td>
+                    <p>
+                        <label>Usuario:</label><br>
+                        <select name="usuario_id" required>
+                            <option value="">-- Selecciona un usuario --</option>
+                            {% for usuario in usuarios %}
+                            <option value="{{ usuario.id }}">{{ usuario.nombre|capfirst }}</option>
+                            {% endfor %}
+                        </select>
+                    </p>
                 </td>                
             </tr>            
         </table>        
@@ -52,6 +65,8 @@
         </p>
     </form>
     
+    <br>
+    <hr>
     <H3>Listado de Doctores</H3>
    
 
@@ -71,7 +86,20 @@
                 <td>{{doctor.cedula_profesional}}</td>
                 <td>{{doctor.telefono}}</td>
                 <td>{{doctor.correo}}</td>
-                <td><p>Editar</p><p>Eliminar</p></td>
+                <td>{{doctor.usuario }}</td>
+               
+                <td>
+                    <a href="{% url 'editar_doctor' doctor.id %}">
+                        <button type="button">Editar</button>
+                    </a>
+
+                    <form action="{% url 'eliminar_doctor' doctor.id %}" method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" onclick="return confirm('¿Seguro que deseas eliminar este doctor?')">
+                            Eliminar
+                        </button>
+                    </form>
+                </td>
             </tr>
 
             {%empty%} 

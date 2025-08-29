@@ -1,0 +1,22 @@
+formula.py
+formula.rar
+formulaV2.py
+formulaV3 - Acceso directo.lnk
+formulaV3.py
+formulaV3.spec
+setup.cfg
+build/formulaV3/Analysis-00.toc
+build/formulaV3/base_library.zip
+build/formulaV3/EXE-00.toc
+build/formulaV3/formulaV3.pkg
+build/formulaV3/PKG-00.toc
+build/formulaV3/PYZ-00.pyz
+build/formulaV3/PYZ-00.toc
+build/formulaV3/warn-formulaV3.txt
+build/formulaV3/xref-formulaV3.html
+build/formulaV3/localpycs/pyimod01_archive.pyc
+build/formulaV3/localpycs/pyimod02_importers.pyc
+build/formulaV3/localpycs/pyimod03_ctypes.pyc
+build/formulaV3/localpycs/pyimod04_pywin32.pyc
+build/formulaV3/localpycs/struct.pyc
+dist/formulaV3.exe
