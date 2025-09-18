@@ -7,107 +7,110 @@
 {% block content %}
     <h3>Crear Doctor</h3>
      <!-- Mostrar mensajes flash de Django -->
-    
-    <form method="POST" action="{% url 'crear_doctor' %}">
-        {% csrf_token %}
-        <table>
-            <tr>
-                <td>
-                    <p>
-                        <label>Nombre:</label><br>
-                        <input type="text" name="nombre" required>
-                    </p>
-                </td>
-                <td>
-                    <p>
-                        <label>Especialidad:</label><br>
-                        <select name="especialidad">
-                            {%for especialidad in especialidades %}
-                            <option value="{{ especialidad.id }}">{{ especialidad.nombre }}</option>
-                            {% endfor %}
-                            
-                        </select>
-                    </p>
-                </td>
-                <td>
-                    <p>
-                        <label">Cedula Profecional</label><br>
-                        <input type="text" name="cedula" required>
-                    </p>
-                </td>
-                <td>
-                    <p>
-                        <label>Teléfono:</label><br>
-                        <input type="text" name="telefono" required>
-                    </p>
-                </td>
-                <td>
-                    <p>
-                        <label>Email:</label><br>
-                        <input type="email" name="email" required>
-                    </p>
-                </td>
-                <td>
-                    <p>
-                        <label>Usuario:</label><br>
-                        <select name="usuario_id" required>
-                            <option value="">-- Selecciona un usuario --</option>
-                            {% for usuario in usuarios %}
-                            <option value="{{ usuario.id }}">{{ usuario.nombre|capfirst }}</option>
-                            {% endfor %}
-                        </select>
-                    </p>
-                </td>                
-            </tr>            
-        </table>        
-        <p>
-            <button type="submit">Crear Doctor</button>
-        </p>
-    </form>
+<form method="POST" action="{% if doctor %}{% url 'editar_doctor' doctor.id %}{% else %}{% url 'crear_doctor' %}{% endif %}">
+    {% csrf_token %}
+    {% if doctor %}
+        <input type="hidden" name="id" value="{{ doctor.id }}">
+    {% endif %}
+    <table>
+        <tr>
+            <td>
+                <p>
+                    <label>Nombre:</label><br>
+                    <input type="text" name="nombre" value="{{ doctor.nombre|default:'' }}" required>
+                </p>
+            </td>
+            <td>
+                <p>
+                    <label>Especialidad:</label><br>
+                    <select name="especialidad">
+                        {% for especialidad in especialidades %}
+                        <option value="{{ especialidad.id }}" {% if doctor and doctor.especialidad_id == especialidad.id %}selected{% endif %}>
+                            {{ especialidad.nombre }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </p>
+            </td>
+            <td>
+                <p>
+                    <label>Cédula Profesional:</label><br>
+                    <input type="text" name="cedula" value="{{ doctor.cedula_profesional|default:'' }}" required>
+                </p>
+            </td>
+            <td>
+                <p>
+                    <label>Teléfono:</label><br>
+                    <input type="text" name="telefono" value="{{ doctor.telefono|default:'' }}" required>
+                </p>
+            </td>
+            <td>
+                <p>
+                    <label>Email:</label><br>
+                    <input type="email" name="email" value="{{ doctor.correo|default:'' }}" required>
+                </p>
+            </td>
+            <td>
+                <p>
+                    <label>Usuario:</label><br>
+                    <select name="usuario_id" required>
+                        <option value="">-- Selecciona un usuario --</option>
+                        {% for usuario in usuarios %}
+                        <option value="{{ usuario.id }}" {% if doctor and doctor.usuario_id == usuario.id %}selected{% endif %}>
+                            {{ usuario.username|capfirst }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </p>
+            </td>
+        </tr>
+    </table>
+    <p>
+        <button type="submit">{% if doctor %}Actualizar Doctor{% else %}Crear Doctor{% endif %}</button>
+    </p>
+</form>
     
     <br>
     <hr>
-    <H3>Listado de Doctores</H3>
-   
-
-        <table border="1" cellpadding="5">
-            <tr>
-                <th>Nombre</th>
-                <th>Especialidad</th>
-                <th>Cédula</th>
-                <th>Teléfono</th>
-                <th>Email</th>
-                <th>Opciones</th>
-            </tr>
-            <tr> 
-                {%for doctor in doctores %}
-                <td>{{doctor.nombre}} </td>
-                <td>{{doctor.especialidad}}</td>
-                <td>{{doctor.cedula_profesional}}</td>
-                <td>{{doctor.telefono}}</td>
-                <td>{{doctor.correo}}</td>
-                <td>{{doctor.usuario }}</td>
-               
-                <td>
-                    <a href="{% url 'editar_doctor' doctor.id %}">
-                        <button type="button">Editar</button>
-                    </a>
-
-                    <form action="{% url 'eliminar_doctor' doctor.id %}" method="post" style="display:inline;">
-                        {% csrf_token %}
-                        <button type="submit" onclick="return confirm('¿Seguro que deseas eliminar este doctor?')">
-                            Eliminar
-                        </button>
-                    </form>
-                </td>
-            </tr>
-
-            {%empty%} 
-            <tr>
-                <td colspan="5">No hay doctores registrados.</td>
-            </tr>
-            {% endfor %}              
-        </table> 
       
-    
+    <h3>Listado de Doctores</h3>
+<table border="1" cellpadding="5">
+    <tr>
+        <th>Nombre</th>
+        <th>Especialidad</th>
+        <th>Cédula</th>
+        <th>Teléfono</th>
+        <th>Email</th>
+        <th>Usuario</th>
+        <th>Opciones</th>
+    </tr>
+    {% for doctor in doctores %}
+    <tr>
+        <td>{{ doctor.nombre }}</td>
+        <td>{{ doctor.especialidad }}</td>
+        <td>{{ doctor.cedula_profesional }}</td>
+        <td>{{ doctor.telefono }}</td>
+        <td>{{ doctor.correo }}</td>
+        <td>{{ doctor.usuario }}</td>
+        <td>
+            
+         
+            <a href="{% url 'editar_doctor' doctor.id %}" class="btn-link">
+                Editar
+            </a>
+            <br><br>
+            <form action="{% url 'eliminar_doctor' doctor.id %}" method="post" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" onclick="return confirm('¿Seguro que deseas eliminar este doctor?')">
+                    Eliminar
+                </button>
+            </form>
+        </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="7">No hay doctores registrados.</td>
+    </tr>
+    {% endfor %}
+</table>
 {% endblock %}
