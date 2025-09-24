@@ -366,17 +366,10 @@ def eliminar_cita(request, cita_id):
 #       "doctores": doctores
 #   })
 
-
-from django.shortcuts import render, redirect
-from django.db import connection
-
-from django.db import connection
-from django.shortcuts import render, redirect
-
 def crear_o_editar_doctor(request, id=None):
     doctor = None  # Para precargar datos si estamos editando
 
-    if request.method == "POST":
+    if request.method == "POST" and "nombre" in request.POST:
         # 🔹 Recibir datos del formulario
         id = request.POST.get("id")
         nombre = request.POST.get("nombre")
@@ -438,7 +431,7 @@ def crear_o_editar_doctor(request, id=None):
                    d.telefono, d.correo, u.username AS usuario
             FROM doctor d
             LEFT JOIN especialidad e ON d.especialidad_id = e.id
-            LEFT JOIN usuario u ON d.usuario_id = u.id
+            LEFT JOIN usuario u ON d.usuario_id = u.id WHERE d.estatus_id = 1
             ORDER BY d.id
         """)
         doctores = [{
@@ -464,7 +457,79 @@ def crear_o_editar_doctor(request, id=None):
 
  
 def eliminar_doctor(request, id):
-    with connection.cursor() as cursor:
-        cursor.execute("UPDATE doctor SET estatus_id = %s WHERE id = %s", [2, id])
-    messages.success(request, "Doctor eliminado correctamente.")
+    if request.method == "POST":
+        with connection.cursor() as cursor:
+            cursor.execute("UPDATE doctor SET estatus_id = %s WHERE id = %s", [2, id])
+        messages.success(request, "Doctor eliminado correctamente.")
     return redirect("crear_doctor")
+
+def crear_o_editar_secretaria(request, id=None):
+    secretaria = None  # Para precargar datos si estamos editando
+
+    if request.method == "POST" and "nombre" in request.POST:
+        # 🔹 Recibir datos del formulario
+        id = request.POST.get("id")
+        nombre = request.POST.get("nombre")
+        apellido = request.POST.get("apellido")
+        telefono = request.POST.get("telefono")
+        correo = request.POST.get("email")
+        usuario_id = request.POST.get("usuario_id")
+
+        with connection.cursor() as cursor:
+            if id:  # 🔹 EDITAR
+                cursor.execute("""
+                    UPDATE secretaria 
+                    SET nombre=%s, apellido=%s, telefono=%s, 
+                        correo=%s, usuario_id=%s
+                    WHERE id=%s
+                """, [nombre, apellido, telefono, correo, usuario_id, id])
+            else:  # 🔹 CREAR
+                cursor.execute("""
+                    INSERT INTO secretaria (nombre, apellido, telefono, correo, usuario_id, estatus_id)
+                    VALUES (%s, %s, %s, %s, %s, 1)
+                """, [nombre, apellido, telefono, correo, usuario_id])
+
+        return redirect("crear_secretaria")
+
+    # 🔹 Si es GET, cargar datos para editar
+    if id:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT id, nombre, apellido, telefono, correo, usuario_id
+                FROM secretaria WHERE id=%s
+            """, [id])
+            row = cursor.fetchone()
+            if row:
+                secretaria = {
+                    "id": row[0],
+                    "nombre": row[1],
+                    "apellido": row[2],
+                    "telefono": row[3],
+                    "correo": row[4],
+                    "usuario_id": row[5],
+                }
+
+    # 🔹 Obtener usuarios
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT id, username FROM usuario ORDER BY username")
+        usuarios = [{"id": u[0], "username": u[1]} for u in cursor.fetchall()]
+
+    # 🔹 Obtener lista de secretarias
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT s.id, s.nombre, s.apellido, s.telefono,
+                   s.correo, u.username AS usuario
+            FROM secretaria s
+            LEFT JOIN usuario u ON s.usuario_id = u.id WHERE s.estatus_id
+            = 1 ORDER BY s.id
+        """)
+        secretarias = [{
+            "id": row[0],
+            "nombre": row[1],
+            "apellido": row[2],
+            "telefono": row[3],
+            "correo": row[4],
+            "usuario": row[5],
+        } for row in cursor.fetchall()]
+    # 🔹 Renderizar template        
+            

@@ -16,6 +16,13 @@
         <tr>
             <td>
                 <p>
+                    <label >ID</label>
+                    <input type="text" name="id" value="{{ doctor.id|default:'' }}" readonly>
+                </p>
+            </td>
+
+            <td>
+                <p>
                     <label>Nombre:</label><br>
                     <input type="text" name="nombre" value="{{ doctor.nombre|default:'' }}" required>
                 </p>
@@ -86,6 +93,7 @@
     </tr>
     {% for doctor in doctores %}
     <tr>
+       
         <td>{{ doctor.nombre }}</td>
         <td>{{ doctor.especialidad }}</td>
         <td>{{ doctor.cedula_profesional }}</td>
@@ -105,6 +113,7 @@
                     Eliminar
                 </button>
             </form>
+
         </td>
     </tr>
     {% empty %}
