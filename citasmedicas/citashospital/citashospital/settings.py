@@ -68,7 +68,7 @@ WSGI_APPLICATION = 'citashospital.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'hospital_db',
+        'NAME': 'db_citas_hospital',
         'USER': 'root',
         'PASSWORD': '',  # Set your MySQL root password here
         'HOST': 'localhost',
