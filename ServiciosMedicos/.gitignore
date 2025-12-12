@@ -1,0 +1,30 @@
+# Entorno de Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Archivos de entorno y configuraciones locales
+.env
+*.sqlite3
+*.log
+
+# VSCode
+.vscode/
+
+# PyInstaller
+build/
+dist/
+*.spec
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*.bak
+*~.bak
+*.tmp   
