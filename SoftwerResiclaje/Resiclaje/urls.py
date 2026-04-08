@@ -17,7 +17,11 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path
+from Resiclaje.views import CustomLoginView, RegistrarCompraView, CorteDiarioView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("login/", CustomLoginView.as_view(), name="login"),
+    path("inventario/compra/", RegistrarCompraView.as_view(), name="registrar_compra"),
+    path("inventario/corte/", CorteDiarioView.as_view(), name="corte_diario"),
 ]

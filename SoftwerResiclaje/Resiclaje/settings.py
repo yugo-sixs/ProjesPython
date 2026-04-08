@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/6.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
-
+import os  # Agregado para manejo de rutas estáticas
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -75,9 +75,9 @@ WSGI_APPLICATION = "Resiclaje.wsgi.application"
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'nombre_bd',
-        'USER': 'tu_usuario',
-        'PASSWORD': 'tu_password',
+        'NAME': 'resiclaje_db',
+        'USER': 'root',
+        'PASSWORD': 'lufiano',
         'HOST': 'localhost',
         'PORT': '5432',
     }
@@ -119,3 +119,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = "static/"
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
