@@ -1,0 +1,31 @@
+{% extends 'attendance/base.html' %}
+{% block title %}Empleados{% endblock %}
+{% block content %}
+<h1>Listado de empleados</h1>
+<div class="card">
+    <table>
+        <thead>
+            <tr>
+                <th>Número</th>
+                <th>Nombre</th>
+                <th>Departamento</th>
+                <th>Puesto</th>
+                <th>Estatus</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for employee in employees %}
+            <tr>
+                <td>{{ employee.employee_number }}</td>
+                <td>{{ employee.first_name }} {{ employee.last_name }}</td>
+                <td>{{ employee.department }}</td>
+                <td>{{ employee.position }}</td>
+                <td>{{ employee.get_status_display }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5">No hay empleados registrados.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends 'attendance/base.html' %}
+{% block title %}Horarios{% endblock %}
+{% block content %}
+<h1>Listado de horarios</h1>
+<div class="card">
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for schedule in schedules %}
+            <tr>
+                <td>{{ schedule.name }}</td>
+                <td>{{ schedule.description }}</td>
+                <td>{% if schedule.active %}Activo{% else %}Inactivo{% endif %}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="3">No hay horarios registrados.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

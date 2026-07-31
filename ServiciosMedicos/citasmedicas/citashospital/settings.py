@@ -126,5 +126,3 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     )
 }
-
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

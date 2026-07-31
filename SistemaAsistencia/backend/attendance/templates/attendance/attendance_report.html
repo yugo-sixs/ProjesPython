@@ -1,0 +1,44 @@
+{% extends 'attendance/base.html' %}
+{% block title %}Reporte de asistencias{% endblock %}
+{% block content %}
+<h1>Reporte de asistencias</h1>
+<div class="card">
+    <form method="get">
+        <label>Desde</label>
+        <input type="date" name="start_date" value="{{ start_date }}">
+        <label>Hasta</label>
+        <input type="date" name="end_date" value="{{ end_date }}">
+        <button type="submit" class="btn">Filtrar</button>
+    </form>
+</div>
+<div class="stats">
+    <div class="stat"><h3>Total</h3><p>{{ summary.total }}</p></div>
+    <div class="stat"><h3>Puntuales</h3><p>{{ summary.puntuales }}</p></div>
+    <div class="stat"><h3>Tolerancias</h3><p>{{ summary.tolerancias }}</p></div>
+    <div class="stat"><h3>Retardos</h3><p>{{ summary.retardos }}</p></div>
+    <div class="stat"><h3>Faltas</h3><p>{{ summary.faltas }}</p></div>
+    <div class="stat"><h3>Justificados</h3><p>{{ summary.justificados }}</p></div>
+</div>
+<div class="card">
+    <table>
+        <thead>
+            <tr>
+                <th>Empleado</th>
+                <th>Fecha</th>
+                <th>Estatus</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for attendance in attendances %}
+            <tr>
+                <td>{{ attendance.employee }}</td>
+                <td>{{ attendance.date }}</td>
+                <td>{{ attendance.get_status_display|default:'Sin estatus' }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="3">No hay registros para el período seleccionado.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

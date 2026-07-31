@@ -61,6 +61,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('nombre', models.CharField(blank=True, max_length=100, null=True)),
+                ('apellidopaterno', models.CharField(blank=True, max_length=100, null=True)),
+                ('apellidomaterno', models.CharField(blank=True, max_length=100, null=True)),
                 ('telefono', models.CharField(blank=True, max_length=20, null=True)),
                 ('numempleado', models.IntegerField(blank=True, null=True)),
                 ('cedula_profesional', models.CharField(blank=True, max_length=50, null=True)),

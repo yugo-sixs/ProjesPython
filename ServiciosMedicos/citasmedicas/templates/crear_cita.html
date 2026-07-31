@@ -54,9 +54,10 @@
                 <p>
                     <label>Paciente:</label><br>
                     <select name="paciente_id">
-                    {% for paciente in pacientes %}
-                    <option value="{{ paciente.id }}">{{ paciente.nombre }}</option>
-                    {% endfor %}
+                        {% for paciente in pacientes %}
+                        <option value="{{ paciente.id }}">{{ paciente.nombre }}</option>
+                        {% endfor %}
+                    </select>
                 </p>
             </td>
             <td>
@@ -74,7 +75,7 @@
     <p>
         <button type="submit">Guardar Cita</button>
     </p>
-
+</form>
 
 
 {% endblock %}

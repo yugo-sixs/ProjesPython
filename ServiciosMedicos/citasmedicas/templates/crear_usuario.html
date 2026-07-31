@@ -48,7 +48,7 @@
         <select name="rol" required>
             <option value="">Seleccione un rol</option>
             {% for rol in roles %}
-                <option value="{{ rol.id }}" {% if usuario_editar.rol.id == rol.id %}selected{% endif %}>{{ rol.nombre }}</option>
+                <option value="{{ rol.id }}" {% if rol_actual.id == rol.id %}selected{% endif %}>{{ rol.name }}</option>
             {% endfor %}
         </select>
     </p>
@@ -81,14 +81,14 @@
         <tr>
             <td>{{ usuario.id }}</td>
             <td>{{ usuario.username }}</td>
-            <td>{{ usuario.rol.nombre }}</td>
-            <td>                 
+            <td>{{ usuario.groups.first.name|default:"Sin rol" }}</td>
+            <td>
                 <form action="{% url 'editar_usuario' usuario.id %}" method="get" class="form-action">
                     <p>
                         <button type="submit">Editar</button>
                     </p>
-                    
                 </form>
+            </td>
             <td>
                 <form action="#" method="post" class="form-accion">
                     {% csrf_token %}
@@ -96,13 +96,10 @@
                         <button type="submit" disabled>Desactivar</button>
                     </p>  
                 </form>
-            </td>    
-                
-                
-            </td>           
+            </td>
         </tr>
         {% empty %}
-        <tr><td colspan="4">No hay usuarios registrados.</td></tr>
+        <tr><td colspan="5">No hay usuarios registrados.</td></tr>
         {% endfor %}
     </tbody>
 </table>

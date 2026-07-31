@@ -1,12 +1,7 @@
+from django.conf import settings
 from django.db import models
 
-# Create your models here.
-from django.db import models
 
-
-# ==============================================
-# TABLA: ESTATUS
-# ==============================================
 class Estatus(models.Model):
     nombre = models.CharField(max_length=50)
 
@@ -14,19 +9,6 @@ class Estatus(models.Model):
         return self.nombre
 
 
-
-    username = models.CharField(max_length=150, unique=True)
-    password = models.CharField(max_length=128)
-    rol = models.ForeignKey(Rol, on_delete=models.PROTECT, null=True, blank=True)
-    estatus = models.ForeignKey(Estatus, on_delete=models.PROTECT, default=1)
-
-    def __str__(self):
-        return self.username
-
-
-# ==============================================
-# TABLA: ESPECIALIDAD (solo doctores)
-# ==============================================
 class Especialidad(models.Model):
     nombre = models.CharField(max_length=100, null=True, blank=True)
     descripcion = models.TextField(null=True, blank=True)
@@ -35,11 +17,30 @@ class Especialidad(models.Model):
         return self.nombre or "Sin especialidad"
 
 
-# ==============================================
-# TABLA: PERSONAL (doctores, secretarias, enfermeras, etc.)
-# ==============================================
 class Personal(models.Model):
-    usuario = models.ForeignKey(Usuario, on_delete=models.PROTECT, null=True, blank=True)
+    DOCTOR = 'DOCTOR'
+    ENFERMERA = 'ENFERMERA'
+    SECRETARIA = 'SECRETARIA'
+    ADMINISTRATIVO = 'ADMINISTRATIVO'
+
+    TIPO_PERSONAL_CHOICES = [
+        (DOCTOR, 'Doctor'),
+        (ENFERMERA, 'Enfermera'),
+        (SECRETARIA, 'Secretaria'),
+        (ADMINISTRATIVO, 'Administrativo'),
+    ]
+
+    usuario = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+    )
+    tipo_personal = models.CharField(
+        max_length=20,
+        choices=TIPO_PERSONAL_CHOICES,
+        default=ADMINISTRATIVO,
+    )
     nombre = models.CharField(max_length=100, null=True, blank=True)
     apellidopaterno = models.CharField(max_length=100, null=True, blank=True)
     apellidomaterno = models.CharField(max_length=100, null=True, blank=True)
@@ -51,12 +52,10 @@ class Personal(models.Model):
     estatus = models.ForeignKey(Estatus, on_delete=models.PROTECT, default=1)
 
     def __str__(self):
-        return f"{self.nombre} ({self.usuario.rol.nombre if self.usuario and self.usuario.rol else 'Sin rol'})"
+        nombre = self.nombre or "Personal sin nombre"
+        return f"{nombre} ({self.get_tipo_personal_display()})"
 
 
-# ==============================================
-# TABLA: PACIENTE
-# ==============================================
 class Paciente(models.Model):
     tarjeton = models.IntegerField(null=True, blank=True)
     nombre = models.CharField(max_length=100, null=True, blank=True)
@@ -69,9 +68,6 @@ class Paciente(models.Model):
         return self.nombre or "Paciente sin nombre"
 
 
-# ==============================================
-# TABLA: CITA
-# ==============================================
 class Cita(models.Model):
     ESTADO_CHOICES = [
         ('PENDIENTE', 'Pendiente'),
@@ -86,7 +82,13 @@ class Cita(models.Model):
     hora_inicio = models.TimeField(null=True, blank=True)
     motivo = models.TextField(null=True, blank=True)
     estado = models.CharField(max_length=15, choices=ESTADO_CHOICES, default='PENDIENTE')
-    creada_por = models.ForeignKey(Usuario, on_delete=models.PROTECT, null=True, blank=True, related_name='citas_creadas')
+    creada_por = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name='citas_creadas',
+    )
     estatus = models.ForeignKey(Estatus, on_delete=models.PROTECT, default=1)
 
     def __str__(self):
