@@ -1,0 +1,66 @@
+{% extends 'attendance/base.html' %}
+{% block title %}Empleados{% endblock %}
+{% block content %}
+<h1>Listado de empleados</h1>
+<div class="card">
+    <h2>{% if employee_to_edit %}Editar empleado{% else %}Registrar empleado{% endif %}</h2>
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="employee_id" value="{{ employee_to_edit.id|default:'' }}">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;">
+            <label>Número de empleado<br><input type="text" name="employee_number" value="{{ employee_to_edit.employee_number|default:next_employee_number }}" readonly></label>
+            <label>Tipo<br>
+                <select name="role_type">
+                    <option value="WORKER" {% if employee_to_edit and employee_to_edit.role_type == 'WORKER' %}selected{% endif %}>Empleado</option>
+                    <option value="RH" {% if employee_to_edit and employee_to_edit.role_type == 'RH' %}selected{% endif %}>RH</option>
+                </select>
+            </label>
+            <label>Usuario<br><input type="text" name="username" value="{{ employee_username|default:'' }}"></label>
+            <label>Contraseña<br><input type="password" name="password"></label>
+            <label>Nombre<br><input type="text" name="first_name" value="{{ employee_to_edit.first_name|default:'' }}" required></label>
+            <label>Apellido<br><input type="text" name="last_name" value="{{ employee_to_edit.last_name|default:'' }}" required></label>
+            <label>Departamento<br><input type="text" name="department" value="{{ employee_to_edit.department|default:'' }}"></label>
+            <label>Puesto<br><input type="text" name="position" value="{{ employee_to_edit.position|default:'' }}"></label>
+            <label>Estatus<br>
+                <select name="status">
+                    <option value="ACTIVO" {% if employee_to_edit.status == 'ACTIVO' %}selected{% endif %}>Activo</option>
+                    <option value="BAJA" {% if employee_to_edit.status == 'BAJA' %}selected{% endif %}>Baja</option>
+                    <option value="SUSPENDIDO" {% if employee_to_edit.status == 'SUSPENDIDO' %}selected{% endif %}>Suspendido</option>
+                </select>
+            </label>
+        </div>
+        <button type="submit" class="btn" style="margin-top:12px;">Guardar empleado</button>
+        {% if employee_to_edit %}
+        <a href="{% url 'rh-employees' %}" class="btn" style="margin-top:12px; margin-left:8px; background:#64748b;">Cancelar</a>
+        {% endif %}
+    </form>
+</div>
+<div class="card">
+    <table>
+        <thead>
+            <tr>
+                <th>Número</th>
+                <th>Nombre</th>
+                <th>Departamento</th>
+                <th>Puesto</th>
+                <th>Estatus</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for employee in employees %}
+            <tr>
+                <td>{{ employee.employee_number }}</td>
+                <td>{{ employee.first_name }} {{ employee.last_name }}</td>
+                <td>{{ employee.department }}</td>
+                <td>{{ employee.position }}</td>
+                <td>{{ employee.get_status_display }}</td>
+                <td><a href="{% url 'rh-employees' %}?edit={{ employee.id }}">Editar</a></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6">No hay empleados registrados.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

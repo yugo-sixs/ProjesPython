@@ -1,0 +1,113 @@
+{% extends "layout.html" %}
+
+{% block title %}Crear Personal{% endblock %}
+
+{% block subtitle %}Formulario para crear Un Personal{% endblock %}
+
+{% block content %}
+{% if messages %}
+    {% for message in messages %}
+                <div class="{% if message.tags == 'error' %}error-message{% else %}success-message{% endif %}">
+                    {{ message }}
+                </div>
+        
+        <style>
+            .error-message {
+                color: red;
+            }
+            .success-message {
+                color: green;
+            }
+        </style>
+    {% endfor %}
+{% endif %}
+
+{% if error %}
+<div style="color:red;">{{ error }}</div>
+{% endif %}
+
+{% if success %}
+<div style="color:green;">{{ success }}</div>
+{% endif %}
+<h3>Crear Personal</h3>
+ <!-- Mostrar mensajes flash de Django -->
+<form method="POST">
+    {% csrf_token %}
+
+    <table>
+
+        <tr>
+            <td>
+                <p>
+                    <label>ID</label><br>
+                    <input type="text" value="{{ personal.id|default:'' }}" readonly>
+                </p>
+            </td>
+
+            <td>
+                <p>
+                    <label>Nombre:</label><br>
+                    <input type="text" name="nombre" value="{{ personal.nombre|default:'' }}" required>
+                </p>
+            </td>
+
+            <td>
+                <p>
+                    <label>Teléfono:</label><br>
+                    <input type="text" name="telefono" value="{{ personal.telefono|default:'' }}" required>
+                </p>
+            </td>
+
+            <td>
+                <p>
+                    <label>No. Empleado:</label><br>
+                    <input type="number" name="noempleado" value="{{ personal.numempleado|default:'' }}" required>
+                </p>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <p>
+                    <label>Cédula Profesional:</label><br>
+                    <input type="text" name="cedulaprofecional"
+                        value="{{ personal.cedula_profesional|default:'' }}" required>
+                </p>
+            </td>
+
+            <td>
+                <p>
+                    <label>Especialidad:</label><br>
+                    <select name="especialidad" required>
+                        <option value="">Seleccione una especialidad</option>
+                        {% for esp in especialidades %}
+                            <option value="{{ esp.id }}"
+                                {% if personal.especialidad_id == esp.id %}selected{% endif %}>
+                                {{ esp.nombre }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </p>
+            </td>
+
+            <td>
+                <p>
+                    <label>Usuario Asociado:</label><br>
+                    <select name="usuario_id" required>
+                        <option value="">Seleccione un usuario</option>
+                        {% for usuario in usuarios %}
+                            <option value="{{ usuario.id }}"
+                                {% if personal.usuario_id == usuario.id %}selected{% endif %}>
+                                {{ usuario.username }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </p>
+            </td>
+        </tr>
+
+    </table>
+
+    <button type="submit">Guardar</button>
+</form>
+{% endblock %}

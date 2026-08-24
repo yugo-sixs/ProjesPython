@@ -1,0 +1,109 @@
+{% extends "layout.html" %}
+
+{% block title %}Crear Usuario{% endblock %}
+
+{% block subtitle %}Formulario para crear usuario{% endblock %}
+
+{% block content %}
+{% if messages %}
+    {% for message in messages %}
+                <div class="{% if message.tags == 'error' %}error-message{% else %}success-message{% endif %}">
+                    {{ message }}
+                </div>
+        
+        <style>
+            .error-message {
+                color: red;
+            }
+            .success-message {
+                color: green;
+            }
+        </style>
+    {% endfor %}
+{% endif %}
+
+{% if error %}
+<div style="color:red;">{{ error }}</div>
+{% endif %}
+
+{% if success %}
+<div style="color:green;">{{ success }}</div>
+{% endif %}
+
+<h2>Crear Usuario</h2>
+
+<form method="POST">
+    {% csrf_token %}
+    <p><label>Usuario:</label></p>
+    <p><input type="text" name="username" value="{{ usuario_editar.username|default:'' }}" required></p>
+
+    <p><label>Contraseña:</label></p>
+    <p><input type="password" name="password" {% if not editando %}required{% endif %}></p>
+
+    <p><label>Confirmar contraseña:</label></p>
+    <p><input type="password" name="password1" {% if not editando %}required{% endif %}></p>
+
+    <p><label>Rol:</label></p>
+    <p>
+        <select name="rol" required>
+            <option value="">Seleccione un rol</option>
+            {% for rol in roles %}
+                <option value="{{ rol.id }}" {% if rol_actual.id == rol.id %}selected{% endif %}>{{ rol.name }}</option>
+            {% endfor %}
+        </select>
+    </p>
+
+    <p>
+        <button type="submit">{{ editando|yesno:"Actualizar,Guardar" }}</button>
+        {% if editando %}
+        <a href="{% url 'crear_usuario' %}">Cancelar</a>
+        {% endif %}
+    </p>
+</form>
+
+<hr>
+
+<h2>Listado de Usuarios</h2>
+                
+<table border="1" cellpadding="4" cellspacing="0">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Usuario</th>
+            <th>Rol</th>
+            <th>Editar</th>
+            <th>Desactivar</th>
+        </tr>
+    </thead>
+    
+    <tbody>
+        {% for usuario in usuarios %}
+        <tr>
+            <td>{{ usuario.id }}</td>
+            <td>{{ usuario.username }}</td>
+            <td>{{ usuario.groups.first.name|default:"Sin rol" }}</td>
+            <td>
+                <form action="{% url 'editar_usuario' usuario.id %}" method="get" class="form-action">
+                    <p>
+                        <button type="submit">Editar</button>
+                    </p>
+                </form>
+            </td>
+            <td>
+                <form action="#" method="post" class="form-accion">
+                    {% csrf_token %}
+                    <p>
+                        <button type="submit" disabled>Desactivar</button>
+                    </p>  
+                </form>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5">No hay usuarios registrados.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+
+{% endblock %}
