@@ -1,0 +1,16 @@
+{% extends 'attendance/base.html' %}
+{% block title %}Mi asistencia{% endblock %}
+{% block content %}
+<h1>Mi asistencia</h1>
+<p class="muted">Vista exclusiva para trabajadores.</p>
+<div class="card">
+    <h2>Información de usuario</h2>
+    <p><strong>Nombre:</strong> {{ request.user.first_name|default:request.user.username }}</p>
+    <p><strong>Empleado:</strong> {{ employee_name }}</p>
+    <p><strong>Número:</strong> {{ employee_number }}</p>
+</div>
+<div class="card">
+    <h2>Registro de asistencias</h2>
+    <p>No hay asistencias registradas todavía.</p>
+</div>
+{% endblock %}

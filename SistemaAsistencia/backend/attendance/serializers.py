@@ -1,7 +1,10 @@
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
 from .models import Attendance, AttendanceRecord, Employee, EmployeeSchedule, Justification, WorkSchedule, WorkScheduleDay
+
+
+User = get_user_model()
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -31,6 +34,7 @@ class EmployeeSerializer(serializers.ModelSerializer):
             "phone",
             "department",
             "position",
+            "role_type",
             "hire_date",
             "termination_date",
             "status",

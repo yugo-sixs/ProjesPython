@@ -1,0 +1,11 @@
+{% extends 'attendance/base.html' %}
+{% block title %}Panel Admin{% endblock %}
+{% block content %}
+<h1>Panel de administrador</h1>
+<p class="muted">Acceso completo al sistema y a la administración de Django.</p>
+<div class="card">
+    <h2>Opciones disponibles</h2>
+    <p><a class="btn" href="/admin/">Ir al panel de Django</a></p>
+    <p><a class="btn" href="{% url 'rh-dashboard' %}">Ver dashboard RH</a></p>
+</div>
+{% endblock %}

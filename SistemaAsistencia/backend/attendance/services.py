@@ -3,6 +3,7 @@ from decimal import Decimal
 
 from django.db import transaction
 from django.utils import timezone
+from rest_framework.exceptions import ValidationError
 
 from .models import Attendance, AttendanceRecord, EmployeeSchedule
 
@@ -28,16 +29,21 @@ def get_employee_schedule_day(employee, work_date):
     return assignment.schedule.days.filter(weekday=work_date.isoweekday()).first()
 
 
+def normalize_device_datetime(device_datetime):
+    if timezone.is_naive(device_datetime):
+        return timezone.make_aware(device_datetime, timezone.get_current_timezone())
+    return timezone.localtime(device_datetime)
+
+
 def classify_check_in(schedule_day, device_datetime):
     if schedule_day is None:
         return Attendance.Status.OTHER
     if schedule_day.is_rest_day:
         return Attendance.Status.REST
 
+    device_datetime = normalize_device_datetime(device_datetime)
     scheduled_datetime = datetime.combine(device_datetime.date(), schedule_day.start_time)
     scheduled_datetime = timezone.make_aware(scheduled_datetime, timezone.get_current_timezone())
-    if timezone.is_naive(device_datetime):
-        device_datetime = timezone.make_aware(device_datetime, timezone.get_current_timezone())
     tolerance_limit = scheduled_datetime + timedelta(minutes=schedule_day.tolerance_minutes)
 
     if device_datetime <= scheduled_datetime:
@@ -70,7 +76,7 @@ def get_client_ip(request):
 
 @transaction.atomic
 def register_attendance_record(employee, record_type, validated_data, request):
-    device_datetime = validated_data["device_datetime"]
+    device_datetime = normalize_device_datetime(validated_data["device_datetime"])
     work_date = device_datetime.date()
     schedule_day = get_employee_schedule_day(employee, work_date)
 
@@ -84,9 +90,16 @@ def register_attendance_record(employee, record_type, validated_data, request):
         attendance.schedule_day = schedule_day
 
     if record_type == AttendanceRecord.RecordType.CHECK_IN:
+        if attendance.check_in_time:
+            raise ValidationError({"detail": "Ya existe una entrada registrada para este día."})
         attendance.check_in_time = device_datetime.time()
         attendance.status = classify_check_in(schedule_day, device_datetime)
     else:
+        if not attendance.check_in_time:
+            raise ValidationError({"detail": "No se puede registrar salida sin entrada previa."})
+        if attendance.check_out_time:
+            raise ValidationError({"detail": "Ya existe una salida registrada para este día."})
+
         attendance.check_out_time = device_datetime.time()
         regular_hours = schedule_day.regular_hours if schedule_day else Decimal("8.00")
         total_hours, overtime_hours = calculate_worked_hours(

@@ -28,7 +28,7 @@ class ApiClient {
     );
 
     if (response.statusCode != 200) {
-      throw Exception('Usuario o contrasena incorrectos');
+      throw Exception('Usuario o contraseña incorrectos');
     }
 
     final body = jsonDecode(response.body) as Map<String, dynamic>;

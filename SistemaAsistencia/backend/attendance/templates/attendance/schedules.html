@@ -1,27 +1,100 @@
 {% extends 'attendance/base.html' %}
 {% block title %}Horarios{% endblock %}
 {% block content %}
-<h1>Listado de horarios</h1>
-<div class="card">
-    <table>
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Descripción</th>
-                <th>Estado</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for schedule in schedules %}
-            <tr>
-                <td>{{ schedule.name }}</td>
-                <td>{{ schedule.description }}</td>
-                <td>{% if schedule.active %}Activo{% else %}Inactivo{% endif %}</td>
-            </tr>
-            {% empty %}
-            <tr><td colspan="3">No hay horarios registrados.</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+    <div>
+        <h1 class="h3 mb-1">Horarios</h1>
+        <p class="text-secondary mb-0">Configura entradas, salidas, tolerancia y descansos por día.</p>
+    </div>
+    {% if schedule_to_edit %}
+        <a class="btn btn-outline-secondary" href="{% url 'rh-schedules' %}">Nuevo horario</a>
+    {% endif %}
+</div>
+
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+        <h2 class="h5 mb-3">{% if schedule_to_edit %}Editar horario{% else %}Crear horario{% endif %}</h2>
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="schedule_id" value="{{ schedule_to_edit.id|default:'' }}">
+
+            <div class="row g-3 mb-4">
+                <div class="col-12 col-md-4">
+                    <label class="form-label">Nombre</label>
+                    <input class="form-control" type="text" name="name" value="{{ schedule_to_edit.name|default:'' }}" required>
+                </div>
+                <div class="col-12 col-md-6">
+                    <label class="form-label">Descripción</label>
+                    <input class="form-control" type="text" name="description" value="{{ schedule_to_edit.description|default:'' }}">
+                </div>
+                <div class="col-12 col-md-2 d-flex align-items-end">
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="active" id="active" {% if not schedule_to_edit or schedule_to_edit.active %}checked{% endif %}>
+                        <label class="form-check-label" for="active">Activo</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-responsive mb-3">
+                <table class="table table-sm align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Día</th>
+                            <th>Entrada</th>
+                            <th>Salida</th>
+                            <th>Tolerancia</th>
+                            <th>Jornada</th>
+                            <th>Descanso</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in schedule_day_rows %}
+                            <tr>
+                                <td class="fw-semibold">{{ row.label }}</td>
+                                <td><input class="form-control form-control-sm" type="time" name="day_{{ row.weekday }}_start_time" value="{{ row.start_time }}"></td>
+                                <td><input class="form-control form-control-sm" type="time" name="day_{{ row.weekday }}_end_time" value="{{ row.end_time }}"></td>
+                                <td><input class="form-control form-control-sm" type="number" min="0" name="day_{{ row.weekday }}_tolerance_minutes" value="{{ row.tolerance_minutes }}"></td>
+                                <td><input class="form-control form-control-sm" type="number" min="0" step="0.25" name="day_{{ row.weekday }}_regular_hours" value="{{ row.regular_hours }}"></td>
+                                <td>
+                                    <input class="form-check-input" type="checkbox" name="day_{{ row.weekday }}_is_rest_day" {% if row.is_rest_day %}checked{% endif %}>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Guardar horario</button>
+        </form>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th>Estado</th>
+                    <th>Días</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for schedule in schedules %}
+                    <tr>
+                        <td>{{ schedule.name }}</td>
+                        <td>{{ schedule.description }}</td>
+                        <td>{% if schedule.active %}<span class="badge text-bg-success">Activo</span>{% else %}<span class="badge text-bg-secondary">Inactivo</span>{% endif %}</td>
+                        <td>{{ schedule.days.count }}</td>
+                        <td><a class="btn btn-outline-primary btn-sm" href="{% url 'rh-schedules' %}?edit={{ schedule.id }}">Editar</a></td>
+                    </tr>
+                {% empty %}
+                    <tr><td class="text-center text-secondary py-4" colspan="5">No hay horarios registrados.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 {% endblock %}

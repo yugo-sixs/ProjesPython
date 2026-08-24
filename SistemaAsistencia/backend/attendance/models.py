@@ -8,6 +8,10 @@ class Employee(models.Model):
         INACTIVE = "BAJA", "Baja"
         SUSPENDED = "SUSPENDIDO", "Suspendido"
 
+    class RoleType(models.TextChoices):
+        WORKER = "WORKER", "Trabajador"
+        RH = "RH", "RH"
+
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="employee")
     employee_number = models.CharField(max_length=50, unique=True)
     first_name = models.CharField(max_length=150)
@@ -15,6 +19,7 @@ class Employee(models.Model):
     phone = models.CharField(max_length=30, blank=True)
     department = models.CharField(max_length=100, blank=True)
     position = models.CharField(max_length=100, blank=True)
+    role_type = models.CharField(max_length=20, choices=RoleType.choices, default=RoleType.WORKER)
     hire_date = models.DateField(null=True, blank=True)
     termination_date = models.DateField(null=True, blank=True)
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.ACTIVE)

@@ -13,11 +13,6 @@ from .views import (
     MobileProfileView,
     ReportSummaryView,
     WorkScheduleViewSet,
-    rh_attendance_report_view,
-    rh_dashboard_view,
-    rh_employees_view,
-    rh_login_view,
-    rh_schedules_view,
 )
 
 
@@ -59,11 +54,6 @@ router.register("rh/asistencias", AttendanceViewSet, basename="rh-attendances")
 
 urlpatterns = [
     path("", api_root, name="api-root"),
-    path("rh/login/", rh_login_view, name="rh-login"),
-    path("rh/dashboard/", rh_dashboard_view, name="rh-dashboard"),
-    path("rh/empleados/", rh_employees_view, name="rh-employees"),
-    path("rh/horarios/", rh_schedules_view, name="rh-schedules"),
-    path("rh/reportes/asistencias/", rh_attendance_report_view, name="rh-attendance-report"),
     path("mobile/me/", MobileProfileView.as_view(), name="mobile-profile"),
     path("mobile/asistencia/entrada/", MobileCheckInView.as_view(), name="mobile-check-in"),
     path("mobile/asistencia/salida/", MobileCheckOutView.as_view(), name="mobile-check-out"),
