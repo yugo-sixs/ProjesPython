@@ -7,6 +7,7 @@ from rest_framework.routers import DefaultRouter
 from .views import (
     AttendanceViewSet,
     EmployeeViewSet,
+    EmployeeScheduleViewSet,
     MobileAttendanceHistoryView,
     MobileCheckInView,
     MobileCheckOutView,
@@ -39,6 +40,7 @@ def api_root(request):
                 "rh": {
                     "employees": "/api/rh/empleados/",
                     "schedules": "/api/rh/horarios/",
+                    "schedule_assignments": "/api/rh/asignaciones-horario/",
                     "attendances": "/api/rh/asistencias/",
                     "summary": "/api/rh/reportes/resumen/",
                 },
@@ -50,6 +52,7 @@ def api_root(request):
 router = DefaultRouter()
 router.register("rh/empleados", EmployeeViewSet, basename="rh-employees")
 router.register("rh/horarios", WorkScheduleViewSet, basename="rh-schedules")
+router.register("rh/asignaciones-horario", EmployeeScheduleViewSet, basename="rh-schedule-assignments")
 router.register("rh/asistencias", AttendanceViewSet, basename="rh-attendances")
 
 urlpatterns = [

@@ -49,7 +49,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text('Asistencia', style: Theme.of(context).textTheme.headlineMedium),
+                  Text('Asistencia',
+                      style: Theme.of(context).textTheme.headlineMedium),
                   const SizedBox(height: 24),
                   TextField(
                     controller: _username,
@@ -64,11 +65,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     onSubmitted: (_) => _login(),
                   ),
                   const SizedBox(height: 16),
-                  if (_error != null) Text(_error!, style: const TextStyle(color: Colors.red)),
+                  if (_error != null)
+                    Text(_error!, style: const TextStyle(color: Colors.red)),
                   const SizedBox(height: 16),
                   FilledButton(
                     onPressed: _loading ? null : _login,
-                    child: _loading ? const CircularProgressIndicator() : const Text('Ingresar'),
+                    child: _loading
+                        ? const CircularProgressIndicator()
+                        : const Text('Ingresar'),
                   ),
                 ],
               ),

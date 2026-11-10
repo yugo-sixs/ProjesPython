@@ -2,6 +2,37 @@ from django.conf import settings
 from django.db import models
 
 
+class Department(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField(blank=True)
+    active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = "departamentos"
+        ordering = ["name"]
+
+    def __str__(self):
+        return self.name
+
+
+class Position(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField(blank=True)
+    department = models.ForeignKey(Department, on_delete=models.SET_NULL, null=True, blank=True, related_name="positions")
+    active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = "puestos"
+        ordering = ["name"]
+
+    def __str__(self):
+        return self.name
+
+
 class Employee(models.Model):
     class Status(models.TextChoices):
         ACTIVE = "ACTIVO", "Activo"
@@ -63,6 +94,7 @@ class WorkScheduleDay(models.Model):
     end_time = models.TimeField()
     tolerance_minutes = models.PositiveSmallIntegerField(default=10)
     regular_hours = models.DecimalField(max_digits=5, decimal_places=2, default=8)
+    food_break_minutes = models.PositiveSmallIntegerField(default=60)
     is_rest_day = models.BooleanField(default=False)
 
     class Meta:

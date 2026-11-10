@@ -32,10 +32,6 @@ class Command(BaseCommand):
         worker_user.save()
 
         Employee.objects.get_or_create(
-            user=admin_user,
-            defaults={"employee_number": "ADM-001", "first_name": "Administrador", "last_name": "Sistema", "status": Employee.Status.ACTIVE},
-        )
-        Employee.objects.get_or_create(
             user=rh_user,
             defaults={"employee_number": "RH-001", "first_name": "Recursos", "last_name": "Humanos", "status": Employee.Status.ACTIVE},
         )

@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+{% block title %}Atender cita{% endblock %}
+{% block subtitle %}Consulta médica{% endblock %}
+{% block content %}
+<h3>{{ cita.paciente }} — {{ cita.fecha_cita }} {{ cita.hora_inicio }}</h3>
+<p><b>Doctor:</b> {{ cita.doctor }} &nbsp; <b>Motivo:</b> {{ cita.motivo }}</p>
+<form method="post">
+    {% csrf_token %}
+    <h3>Evaluación médica</h3>{{ consulta_form.non_field_errors }}
+    <div class="form-grid">{% for field in consulta_form %}<p><label for="{{ field.id_for_label }}">{{ field.label }}</label><br>{{ field }}{{ field.errors }}</p>{% endfor %}</div>
+    <h3>Receta (la cantidad prescrita se descontará del inventario)</h3>
+    <div id="receta-formset" data-prefix="{{ receta_formset.prefix }}">
+        {{ receta_formset.management_form }}{{ receta_formset.non_form_errors }}
+        {% for form in receta_formset %}<div class="form-grid record-card">{% for field in form %}<p><label for="{{ field.id_for_label }}">{{ field.label }}</label><br>{{ field }}{{ field.errors }}</p>{% endfor %}</div>{% endfor %}
+        <template id="{{ receta_formset.prefix }}-empty-form"><div class="form-grid record-card">{% for field in receta_formset.empty_form %}<p><label for="{{ field.id_for_label }}">{{ field.label }}</label><br>{{ field }}</p>{% endfor %}</div></template>
+        <button type="button" onclick="addFormRow('receta-formset')">Agregar medicamento</button>
+    </div>
+    <h3>Estudios solicitados</h3>
+    <div id="estudio-formset" data-prefix="{{ estudio_formset.prefix }}">
+        {{ estudio_formset.management_form }}{{ estudio_formset.non_form_errors }}
+        {% for form in estudio_formset %}<div class="form-grid record-card">{% for field in form %}<p><label for="{{ field.id_for_label }}">{{ field.label }}</label><br>{{ field }}{{ field.errors }}</p>{% endfor %}</div>{% endfor %}
+        <template id="{{ estudio_formset.prefix }}-empty-form"><div class="form-grid record-card">{% for field in estudio_formset.empty_form %}<p><label for="{{ field.id_for_label }}">{{ field.label }}</label><br>{{ field }}</p>{% endfor %}</div></template>
+        <button type="button" onclick="addFormRow('estudio-formset')">Agregar estudio</button>
+    </div>
+    <button type="submit">Guardar consulta</button>
+</form>
+<script>
+function addFormRow(containerId) {
+    const container = document.getElementById(containerId);
+    const prefix = container.dataset.prefix;
+    const total = container.querySelector(`[name="${prefix}-TOTAL_FORMS"]`);
+    const count = Number(total.value);
+    if (count >= 10) return;
+    const html = document.getElementById(prefix + '-empty-form').innerHTML.replaceAll('__prefix__', count);
+    container.insertAdjacentHTML('beforeend', html);
+    total.value = count + 1;
+}
+</script>
+{% endblock %}

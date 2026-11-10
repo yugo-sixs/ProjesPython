@@ -1,81 +1,17 @@
 {% extends "layout.html" %}
-
-{% block title %}Crear Cita{% endblock %}
-
-{% block subtitle %}Formulario para crear Citas{% endblock %}
-
+{% block title %}Crear cita{% endblock %}
+{% block subtitle %}Programar una cita médica{% endblock %}
 {% block content %}
-
-{% if error %}
-<div style="color:red;">{{ error }}</div>
-{% endif %}
-
-{% if success %}
-<div style="color:green;">{{ success }}</div>
-{% endif %}
-
-
-<form method="POST" action="">
-
+<form method="post">
     {% csrf_token %}
-    <table>
-        <tr>
-            
-            <td>
-                <p>
-                    <label>Fecha:</label><br>
-                    <input type="date" name="fecha" required>
-                </p>
-            </td>
-            <td>
-                <p>
-                    <label>Hora:</label><br>
-                    <input type="time" name="hora" required>
-                </p>
-            </td>
-            <td>
-               <p>
-                    <label>Tipo de Cita:</label><br>
-                    <select name="tipo_cita">
-                        <option value="consulta">Consulta</option>
-                        <option value="seguimiento">Seguimiento</option>
-                        <option value="emergencia">Emergencia</option>
-                    </select>
-               </p>
-                    
-            </td>
-            <td>            
-                <p>
-                    <label>Motivo:</label><br>
-                    <input type="text" name="motivo" required>  
-                </p>
-            </td>
-            <td>
-                <p>
-                    <label>Paciente:</label><br>
-                    <select name="paciente_id">
-                        {% for paciente in pacientes %}
-                        <option value="{{ paciente.id }}">{{ paciente.nombre }}</option>
-                        {% endfor %}
-                    </select>
-                </p>
-            </td>
-            <td>
-                <p>
-                    <label>Doctor:</label><br>
-                    <select name="doctor_id">
-                        {% for doctor in doctores %}
-                        <option value="{{ doctor.id }}">{{ doctor.nombre }}</option>
-                        {% endfor %}
-                    </select>
-                </p>
-            </td>
-        </tr>
-    </table>          
-    <p>
-        <button type="submit">Guardar Cita</button>
-    </p>
+    {{ form.non_field_errors }}
+    <div class="form-grid">
+        {% for field in form %}
+        <p><label for="{{ field.id_for_label }}">{{ field.label }}</label><br>
+            {{ field }}{% for error in field.errors %}<small class="error-message">{{ error }}</small>{% endfor %}</p>
+        {% endfor %}
+    </div>
+    <button type="submit">Guardar cita</button>
+    <a href="{% url 'listar_citas' %}">Cancelar</a>
 </form>
-
-
 {% endblock %}

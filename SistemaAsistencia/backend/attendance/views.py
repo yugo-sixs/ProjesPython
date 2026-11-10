@@ -6,17 +6,19 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import timezone
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Attendance, AttendanceRecord, Employee, Justification, WorkSchedule, WorkScheduleDay
+from .models import Attendance, AttendanceRecord, Department, Employee, EmployeeSchedule, Justification, Position, WorkSchedule, WorkScheduleDay
 from .permissions import IsEmployee, IsHumanResources
 from .serializers import (
     AttendanceCaptureSerializer,
     AttendanceSerializer,
     EmployeeSerializer,
+    EmployeeScheduleSerializer,
     JustificationSerializer,
     WorkScheduleSerializer,
 )
@@ -34,8 +36,16 @@ WEEKDAYS = [
 ]
 
 
-def build_next_employee_number():
-    values = Employee.objects.values_list("employee_number", flat=True)
+def build_next_employee_number(role_type="WORKER"):
+    """
+    Genera el próximo número de empleado según el tipo de rol.
+    - WORKER: EMP-XXX
+    - RH: RH-XXX
+    """
+    prefix = "RH" if role_type == "RH" else "EMP"
+    
+    # Filtrar solo los números que comienzan con el prefijo actual
+    values = Employee.objects.filter(employee_number__startswith=prefix).values_list("employee_number", flat=True)
     numeric_values = []
     for value in values:
         match = re.search(r"(\d+)$", str(value))
@@ -43,7 +53,7 @@ def build_next_employee_number():
             numeric_values.append(int(match.group(1)))
 
     next_number = max(numeric_values) + 1 if numeric_values else 1
-    return f"EMP-{next_number:03d}"
+    return f"{prefix}-{next_number:03d}"
 
 
 def build_unique_username(first_name, last_name):
@@ -146,7 +156,7 @@ def rh_my_attendance_view(request):
 
 @login_required(login_url="rh-login")
 def rh_employees_view(request):
-    if request.user.is_superuser or not request.user.is_staff:
+    if not request.user.is_superuser and not request.user.is_staff:
         return HttpResponseForbidden("No tienes acceso a esta vista")
 
     if request.method == "POST":
@@ -155,22 +165,54 @@ def rh_employees_view(request):
         if employee is None:
             employee = Employee()
 
+        # Obtener el rol_type antes de asignarlo
+        role_type = request.POST.get("role_type", Employee.RoleType.WORKER)
+        
+        # Capturar el número de empleado del formulario
+        employee_number = request.POST.get("employee_number", "").strip()
+        
+        # Si es un empleado nuevo y no tiene número, generar uno según el rol
+        # Si el usuario envió un número, usarlo; si no, generar uno
         if not employee.employee_number:
-            employee.employee_number = build_next_employee_number()
+            employee.employee_number = employee_number or build_next_employee_number(role_type)
 
         first_name = request.POST.get("first_name", "").strip()
         last_name = request.POST.get("last_name", "").strip()
-        department = request.POST.get("department", "").strip()
-        position = request.POST.get("position", "").strip()
-        username = request.POST.get("username", "").strip()
-        password = request.POST.get("password", "").strip()
-        role_type = request.POST.get("role_type", Employee.RoleType.WORKER)
-        status_value = request.POST.get("status", Employee.Status.ACTIVE)
-
         employee.first_name = first_name
         employee.last_name = last_name
-        employee.department = department
-        employee.position = position
+        
+        # Manejar departamento: puede venir del select o del input personalizado
+        department_name = request.POST.get("department", "") or request.POST.get("department_custom", "")
+        department_name = department_name.strip()
+        if department_name:
+            # Si no existe, crear el departamento
+            department_obj, created = Department.objects.get_or_create(
+                name=department_name,
+                defaults={"active": True}
+            )
+            employee.department = department_name
+        else:
+            employee.department = ""
+        
+        # Manejar puesto: puede venir del select o del input personalizado
+        position_name = request.POST.get("position", "") or request.POST.get("position_custom", "")
+        position_name = position_name.strip()
+        if position_name:
+            # Si no existe, crear el puesto
+            position_obj, created = Position.objects.get_or_create(
+                name=position_name,
+                defaults={"active": True}
+            )
+            employee.position = position_name
+        else:
+            employee.position = ""
+        
+        username = request.POST.get("username", "").strip()
+        password = request.POST.get("password", "").strip()
+        status_value = request.POST.get("status", Employee.Status.ACTIVE)
+        schedule_id = request.POST.get("schedule_id")
+        schedule_start_date = request.POST.get("schedule_start_date") or timezone.localdate()
+
         employee.role_type = role_type
         employee.status = status_value
 
@@ -192,6 +234,17 @@ def rh_employees_view(request):
             employee.user.save()
 
         employee.save()
+
+        if schedule_id and role_type == Employee.RoleType.WORKER:
+            schedule = get_object_or_404(WorkSchedule, pk=schedule_id)
+            EmployeeSchedule.objects.filter(employee=employee, active=True).update(active=False)
+            EmployeeSchedule.objects.create(
+                employee=employee,
+                schedule=schedule,
+                start_date=schedule_start_date,
+                active=True,
+            )
+
         return redirect("rh-employees")
 
     editing_id = request.GET.get("edit")
@@ -200,8 +253,20 @@ def rh_employees_view(request):
         employee_to_edit = get_object_or_404(Employee, pk=editing_id)
 
     employee_username = employee_to_edit.user.username if employee_to_edit and employee_to_edit.user_id else ""
+    active_schedule = (
+        employee_to_edit.schedule_assignments.filter(active=True).select_related("schedule").first()
+        if employee_to_edit
+        else None
+    )
 
-    employees = Employee.objects.order_by("first_name", "last_name")
+    employees = Employee.objects.prefetch_related("schedule_assignments__schedule").order_by("first_name", "last_name")
+    schedules = WorkSchedule.objects.filter(active=True).order_by("name")
+    departments = Department.objects.filter(active=True).order_by("name")
+    positions = Position.objects.filter(active=True).order_by("name")
+    
+    # Determinar el tipo de rol seleccionado para mostrar el próximo número correcto
+    role_type_context = employee_to_edit.role_type if employee_to_edit else "WORKER"
+    
     return render(
         request,
         "attendance/employees.html",
@@ -209,7 +274,13 @@ def rh_employees_view(request):
             "employees": employees,
             "employee_to_edit": employee_to_edit,
             "employee_username": employee_username,
-            "next_employee_number": build_next_employee_number(),
+            "next_employee_number": build_next_employee_number(role_type_context),
+            "next_rh_number": build_next_employee_number("RH"),
+            "next_worker_number": build_next_employee_number("WORKER"),
+            "active_schedule": active_schedule,
+            "schedules": schedules,
+            "departments": departments,
+            "positions": positions,
         },
     )
 
@@ -234,9 +305,10 @@ def build_schedule_day_rows(schedule=None):
                 "weekday": int(weekday),
                 "label": label,
                 "start_time": day.start_time.strftime("%H:%M") if day else "08:00",
-                "end_time": day.end_time.strftime("%H:%M") if day else "16:00",
+                "end_time": day.end_time.strftime("%H:%M") if day else "17:00",
                 "tolerance_minutes": day.tolerance_minutes if day else 10,
                 "regular_hours": day.regular_hours if day else Decimal("8.00"),
+                "food_break_minutes": day.food_break_minutes if day else 60,
                 "is_rest_day": day.is_rest_day if day else weekday in (6, 7),
             }
         )
@@ -251,6 +323,7 @@ def save_schedule_days(schedule, post_data):
         end_time = post_data.get(f"{prefix}_end_time") or "00:00"
         tolerance = int(post_data.get(f"{prefix}_tolerance_minutes") or 10)
         regular_hours = parse_decimal(post_data.get(f"{prefix}_regular_hours"), "8.00")
+        food_break_minutes = int(post_data.get(f"{prefix}_food_break_minutes") or 60)
 
         WorkScheduleDay.objects.update_or_create(
             schedule=schedule,
@@ -260,6 +333,7 @@ def save_schedule_days(schedule, post_data):
                 "end_time": end_time,
                 "tolerance_minutes": tolerance,
                 "regular_hours": regular_hours,
+                "food_break_minutes": food_break_minutes,
                 "is_rest_day": is_rest_day,
             },
         )
@@ -267,7 +341,7 @@ def save_schedule_days(schedule, post_data):
 
 @login_required(login_url="rh-login")
 def rh_schedules_view(request):
-    if request.user.is_superuser or not request.user.is_staff:
+    if not request.user.is_superuser and not request.user.is_staff:
         return HttpResponseForbidden("No tienes acceso a esta vista")
 
     if request.method == "POST":
@@ -298,7 +372,7 @@ def rh_schedules_view(request):
 
 @login_required(login_url="rh-login")
 def rh_attendance_report_view(request):
-    if request.user.is_superuser or not request.user.is_staff:
+    if not request.user.is_superuser and not request.user.is_staff:
         return HttpResponseForbidden("No tienes acceso a esta vista")
     start_date = request.GET.get("start_date")
     end_date = request.GET.get("end_date")
@@ -393,6 +467,25 @@ class WorkScheduleViewSet(viewsets.ModelViewSet):
     permission_classes = [IsHumanResources]
     queryset = WorkSchedule.objects.prefetch_related("days").all()
     serializer_class = WorkScheduleSerializer
+
+
+class EmployeeScheduleViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsHumanResources]
+    queryset = EmployeeSchedule.objects.select_related("employee", "schedule").all()
+    serializer_class = EmployeeScheduleSerializer
+
+    def perform_create(self, serializer):
+        assignment = serializer.save()
+        self._deactivate_other_active_assignments(assignment)
+
+    def perform_update(self, serializer):
+        assignment = serializer.save()
+        self._deactivate_other_active_assignments(assignment)
+
+    @staticmethod
+    def _deactivate_other_active_assignments(assignment):
+        if assignment.active:
+            EmployeeSchedule.objects.filter(employee=assignment.employee, active=True).exclude(pk=assignment.pk).update(active=False)
 
 
 class AttendanceViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):

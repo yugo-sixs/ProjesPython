@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+{% block title %}Valoración de urgencias {{ recepcion.folio }}{% endblock %}
+{% block subtitle %}Valoración médica inicial y triage{% endblock %}
+{% block content %}
+<section class="record-card">
+    <h3>Folio {{ recepcion.folio }} — {{ recepcion.nombre_completo }}</h3>
+    <p><b>Ingreso:</b> {{ recepcion.fecha_ingreso|date:"d/m/Y H:i" }} · <b>Medio:</b> {{ recepcion.get_medio_ingreso_display }}</p>
+    {% if recepcion.medio_ingreso == 'AMBULANCIA' %}
+    <p><b>Ambulancia:</b> {{ recepcion.ambulancia_institucion }} · {{ recepcion.ambulancia_unidad }} · Procedencia: {{ recepcion.ambulancia_procedencia }} · Entrega: {{ recepcion.ambulancia_entrega }}</p>
+    {% endif %}
+    <p><b>Registró:</b> {{ recepcion.registrado_por }}</p>
+</section>
+<form method="post">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <div class="form-grid">
+    {% for field in form %}<p>
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label><br>{{ field }}
+        {% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
+        {% for error in field.errors %}<small class="error-message">{{ error }}</small>{% endfor %}
+    </p>{% endfor %}
+    </div>
+    <button type="submit">Guardar valoración</button>
+    <a href="{% url 'listar_urgencias' %}">Volver a la bitácora</a>
+</form>
+{% endblock %}

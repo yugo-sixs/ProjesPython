@@ -109,6 +109,8 @@ GET/POST      /api/rh/empleados/
 GET/PUT/DEL   /api/rh/empleados/{id}/
 GET/POST      /api/rh/horarios/
 GET/PUT/DEL   /api/rh/horarios/{id}/
+GET/POST      /api/rh/asignaciones-horario/
+GET/PUT/DEL   /api/rh/asignaciones-horario/{id}/
 GET           /api/rh/asistencias/
 POST          /api/rh/asistencias/{id}/justify/
 GET           /api/rh/reportes/resumen/

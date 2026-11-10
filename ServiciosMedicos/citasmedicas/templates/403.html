@@ -1,0 +1,8 @@
+{% extends "layout.html" %}
+{% block title %}Acceso denegado{% endblock %}
+{% block subtitle %}Acceso denegado{% endblock %}
+{% block content %}
+<h3>No tienes permiso para abrir esta sección.</h3>
+<p>Si necesitas acceso, solicita a administración que te asigne el rol correspondiente.</p>
+<a class="button-link" href="{% url 'home' %}">Volver al inicio</a>
+{% endblock %}

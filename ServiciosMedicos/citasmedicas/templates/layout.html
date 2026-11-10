@@ -20,9 +20,15 @@
         <div class="container">
             <ul>
                 <li><a href="{% url 'home' %}">Inicio</a></li>
-                <li><a href="{% url 'crear_usuario' %}">Crear Usuario</a></li>
-                <li><a href="{% url 'crear_personal' %}">Crear Personal</a></li>
-                <li><a href="#">Crear Cita</a></li>
+                {% if user.is_authenticated %}
+                {% if can_manage_patients %}<li><a href="{% url 'listar_pacientes' %}">Pacientes</a></li>{% endif %}
+                {% if can_schedule_appointments %}<li><a href="{% url 'listar_citas' %}">Citas</a></li>{% endif %}
+                {% if can_attend_appointments %}<li><a href="{% url 'vista_doctor' %}">Agenda médica</a></li>{% endif %}
+                {% if is_administrator %}<li><a href="{% url 'listar_personal' %}">Personal</a></li><li><a href="{% url 'crear_usuario' %}">Usuarios</a></li><li><a href="{% url 'listar_accesos' %}">Permisos y vistas</a></li>{% endif %}
+                {% if can_view_inventory %}<li><a href="{% url 'inventario' %}">Inventario</a></li>{% endif %}
+                {% if can_view_urgencias %}<li><a href="{% url 'listar_urgencias' %}">Urgencias</a></li>{% endif %}
+                <li><a href="{% url 'logout' %}">Cerrar sesión ({{ user.username }})</a></li>
+                {% endif %}
             </ul>
         </div>
     </nav>
@@ -36,15 +42,14 @@
     <div id="content">
         <div class="box">
             <h2 class="title">{% block subtitle %}Bienvenido{% endblock %}</h2>
+            {% if messages %}{% for message in messages %}<p class="{{ message.tags }}">{{ message }}</p>{% endfor %}{% endif %}
             {% block content %}
             <p>Contenido principal aquí</p>
             {% endblock %}
         </div>
     </div>
 
-    <footer>
-        Página creada por <a href="#">tu servilleta</a>
-    </footer>
+    <footer>Sistema de citas médicas</footer>
 </body>
 
 </html>

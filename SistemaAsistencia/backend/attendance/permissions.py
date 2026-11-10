@@ -16,10 +16,12 @@ class IsEmployee(BasePermission):
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        if request.user.is_staff or request.user.is_superuser:
+        if request.user.is_staff and not request.user.is_superuser:
             return False
         if not hasattr(request.user, "employee"):
             return False
 
         employee = request.user.employee
-        return employee.status == Employee.Status.ACTIVE and employee.role_type == Employee.RoleType.WORKER
+        if employee.status != Employee.Status.ACTIVE:
+            return False
+        return request.user.is_superuser or employee.role_type == Employee.RoleType.WORKER

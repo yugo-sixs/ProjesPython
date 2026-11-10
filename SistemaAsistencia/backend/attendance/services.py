@@ -53,7 +53,12 @@ def classify_check_in(schedule_day, device_datetime):
     return Attendance.Status.LATE
 
 
-def calculate_worked_hours(check_in_time, check_out_time, regular_hours=Decimal("8.00")):
+def calculate_worked_hours(
+    check_in_time,
+    check_out_time,
+    regular_hours=Decimal("8.00"),
+    food_break_minutes=60,
+):
     if not check_in_time or not check_out_time:
         return Decimal("0.00"), Decimal("0.00")
 
@@ -62,7 +67,8 @@ def calculate_worked_hours(check_in_time, check_out_time, regular_hours=Decimal(
     if end < start:
         end += timedelta(days=1)
 
-    total = Decimal(str(round((end - start).total_seconds() / 3600, 2)))
+    elapsed = end - start - timedelta(minutes=food_break_minutes)
+    total = Decimal(str(round(max(elapsed.total_seconds(), 0) / 3600, 2)))
     overtime = max(Decimal("0.00"), total - Decimal(regular_hours))
     return total, overtime
 
@@ -106,6 +112,7 @@ def register_attendance_record(employee, record_type, validated_data, request):
             attendance.check_in_time,
             attendance.check_out_time,
             regular_hours,
+            schedule_day.food_break_minutes if schedule_day else 0,
         )
         attendance.total_hours = total_hours
         attendance.overtime_hours = overtime_hours

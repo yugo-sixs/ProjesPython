@@ -1,11 +1,25 @@
 from django.contrib import admin
 
-from .models import Attendance, AttendanceRecord, Employee, EmployeeSchedule, Justification, WorkSchedule, WorkScheduleDay
+from .models import Attendance, AttendanceRecord, Department, Employee, EmployeeSchedule, Justification, Position, WorkSchedule, WorkScheduleDay
 
 
 class WorkScheduleDayInline(admin.TabularInline):
     model = WorkScheduleDay
     extra = 1
+
+
+@admin.register(Department)
+class DepartmentAdmin(admin.ModelAdmin):
+    list_display = ("name", "active", "created_at")
+    list_filter = ("active",)
+    search_fields = ("name",)
+
+
+@admin.register(Position)
+class PositionAdmin(admin.ModelAdmin):
+    list_display = ("name", "department", "active", "created_at")
+    list_filter = ("active", "department")
+    search_fields = ("name",)
 
 
 @admin.register(WorkSchedule)
