@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+{% block title %}Citas{% endblock %}
+{% block subtitle %}{{ titulo|default:"Citas médicas" }}{% endblock %}
+{% block content %}
+{% if can_schedule_appointments %}<p><a class="button-link" href="{% url 'crear_cita' %}">Programar cita</a></p>{% endif %}
+<table>
+    <thead><tr><th>Fecha y hora</th><th>Paciente</th><th>Doctor</th><th>Motivo</th><th>Estado</th><th>Acciones</th></tr></thead>
+    <tbody>
+    {% for cita in citas %}
+    <tr>
+        <td>{{ cita.fecha_cita }} {{ cita.hora_inicio|default:"" }}</td>
+        <td><a href="{% url 'detalle_paciente' cita.paciente_id %}">{{ cita.paciente }}</a></td>
+        <td>{{ cita.doctor }}</td><td>{{ cita.motivo|truncatewords:12 }}</td><td>{{ cita.get_estado_display }}</td>
+        <td>{% if cita.estado != 'CANCELADA' %}{% if not cita.consulta %}<a href="{% url 'crear_consulta' cita.id %}">Atender</a>{% else %}Atendida{% endif %}{% endif %}</td>
+    </tr>
+    {% empty %}<tr><td colspan="6">No hay citas registradas.</td></tr>{% endfor %}
+    </tbody>
+</table>
+{% endblock %}

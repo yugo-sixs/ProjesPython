@@ -1,0 +1,28 @@
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-success text-white">
+            <h4>Nueva Captura de Compra</h4>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label>Material</label>
+                        {{ form.material }}
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label>Peso Bruto (kg)</label>
+                        {{ form.peso_bruto }}
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label>Tara (kg)</label>
+                        {{ form.tara }}
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-success">Guardar Recibo</button>
+                <a href="{% url 'corte_diario' %}" class="btn btn-secondary">Ver Corte</a>
+            </form>
+        </div>
+    </div>
+</div>

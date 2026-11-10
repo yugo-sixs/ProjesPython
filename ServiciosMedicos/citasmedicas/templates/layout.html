@@ -1,0 +1,55 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <title>{% block title %}Citas Médicas{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+
+<body>
+    <header>
+        <div id="logotipo">
+            <h1>Citas Medicas</h1>
+        </div>
+    </header>
+
+    <nav>
+        <div class="container">
+            <ul>
+                <li><a href="{% url 'home' %}">Inicio</a></li>
+                {% if user.is_authenticated %}
+                {% if can_manage_patients %}<li><a href="{% url 'listar_pacientes' %}">Pacientes</a></li>{% endif %}
+                {% if can_schedule_appointments %}<li><a href="{% url 'listar_citas' %}">Citas</a></li>{% endif %}
+                {% if can_attend_appointments %}<li><a href="{% url 'vista_doctor' %}">Agenda médica</a></li>{% endif %}
+                {% if is_administrator %}<li><a href="{% url 'listar_personal' %}">Personal</a></li><li><a href="{% url 'crear_usuario' %}">Usuarios</a></li><li><a href="{% url 'listar_accesos' %}">Permisos y vistas</a></li>{% endif %}
+                {% if can_view_inventory %}<li><a href="{% url 'inventario' %}">Inventario</a></li>{% endif %}
+                {% if can_view_urgencias %}<li><a href="{% url 'listar_urgencias' %}">Urgencias</a></li>{% endif %}
+                <li><a href="{% url 'logout' %}">Cerrar sesión ({{ user.username }})</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    <div class="barra">
+        <span class="esquina-izquierda"></span>
+        <span class="relleno-barra"></span>
+        <span class="esquina-derecha"></span>
+    </div>
+
+    <div id="content">
+        <div class="box">
+            <h2 class="title">{% block subtitle %}Bienvenido{% endblock %}</h2>
+            {% if messages %}{% for message in messages %}<p class="{{ message.tags }}">{{ message }}</p>{% endfor %}{% endif %}
+            {% block content %}
+            <p>Contenido principal aquí</p>
+            {% endblock %}
+        </div>
+    </div>
+
+    <footer>Sistema de citas médicas</footer>
+</body>
+
+</html>

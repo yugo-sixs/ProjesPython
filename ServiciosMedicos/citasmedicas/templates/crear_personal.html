@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+{% block title %}Personal{% endblock %}
+{% block subtitle %}{% if personal.id %}Editar personal{% else %}Registrar personal médico{% endif %}{% endblock %}
+{% block content %}
+<form method="post">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <div class="form-grid">{% for field in form %}<p><label for="{{ field.id_for_label }}">{{ field.label }}</label><br>{{ field }}{{ field.errors }}</p>{% endfor %}</div>
+    <button type="submit">Guardar personal</button>
+</form>
+<h3>Personal registrado</h3>
+<table><thead><tr><th>Nombre</th><th>Tipo</th><th>Especialidad</th><th>Usuario</th></tr></thead><tbody>
+{% for elemento in personal_lista %}<tr><td>{{ elemento }}</td><td>{{ elemento.get_tipo_personal_display }}</td><td>{{ elemento.especialidad|default:"—" }}</td><td>{{ elemento.usuario|default:"—" }}</td></tr>
+{% empty %}<tr><td colspan="4">No hay personal registrado.</td></tr>{% endfor %}</tbody></table>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+{% block title %}Recepción de urgencias{% endblock %}
+{% block subtitle %}Bitácora de recepción de urgencias{% endblock %}
+{% block content %}
+<p>Registra el ingreso físico. El folio de ocho dígitos se genera al guardar.</p>
+<form method="post" id="urgencias-recepcion-form">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <div class="form-grid">
+    {% for field in form %}
+        <p class="{% if field.name|slice:":10" == 'ambulancia' %}ambulance-field{% endif %}">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label><br>
+            {{ field }}{% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
+            {% for error in field.errors %}<small class="error-message">{{ error }}</small>{% endfor %}
+        </p>
+    {% endfor %}
+    </div>
+    <button type="submit">Registrar ingreso</button>
+    <a href="{% url 'listar_urgencias' %}">Volver a la bitácora</a>
+</form>
+<script>
+const medioIngreso = document.getElementById('id_medio_ingreso');
+const ambulanceFields = document.querySelectorAll('.ambulance-field');
+function toggleAmbulanceFields() {
+    const show = medioIngreso.value === 'AMBULANCIA';
+    ambulanceFields.forEach((container) => {
+        container.hidden = !show;
+        const input = container.querySelector('input, textarea');
+        if (input) input.required = show && ['id_ambulancia_institucion', 'id_ambulancia_unidad', 'id_ambulancia_procedencia'].includes(input.id);
+    });
+}
+medioIngreso.addEventListener('change', toggleAmbulanceFields);
+toggleAmbulanceFields();
+</script>
+{% endblock %}

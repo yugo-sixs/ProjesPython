@@ -1,0 +1,44 @@
+<div class="container mt-4">
+    <h2>Corte de Caja: {{ fecha_corte }}</h2>
+    
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="alert alert-danger">
+                <h5>Total Compras (Egresos)</h5>
+                <h3>$ {{ total_compras }}</h3>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="alert alert-info">
+                <h5>Total Ventas (Ingresos)</h5>
+                <h3>$ {{ total_ventas }}</h3>
+            </div>
+        </div>
+    </div>
+
+    <h4>Detalle de Operaciones</h4>
+    <table class="table table-striped border">
+        <thead class="table-dark">
+            <tr>
+                <th>Hora</th>
+                <th>Material</th>
+                <th>Peso Neto</th>
+                <th>Total $</th>
+                <th>Operador</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for t in transacciones %}
+            <tr>
+                <td>{{ t.fecha|date:"H:i" }}</td>
+                <td>{{ t.material.nombre }}</td>
+                <td>{{ t.peso_neto }} kg</td>
+                <td>$ {{ t.total_dinero }}</td>
+                <td>{{ t.usuario_operador.username }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" class="text-center">No hay movimientos hoy.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
