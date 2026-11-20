@@ -1,0 +1,45 @@
+{% extends 'attendance/base.html' %}
+{% block title %}Dashboard RH{% endblock %}
+{% block content %}
+<h1>Dashboard RH</h1>
+<p class="muted">Resumen general del control de asistencia.</p>
+
+<div class="stats">
+    <div class="stat">
+        <h3>Total empleados</h3>
+        <p>{{ total_employees }}</p>
+    </div>
+    <div class="stat">
+        <h3>Horarios activos</h3>
+        <p>{{ active_schedules }}</p>
+    </div>
+    <div class="stat">
+        <h3>Asistencias registradas</h3>
+        <p>{{ total_attendances }}</p>
+    </div>
+</div>
+
+<div class="card">
+    <h2>Últimas asistencias</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Empleado</th>
+                <th>Fecha</th>
+                <th>Estatus</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for attendance in recent_attendances %}
+            <tr>
+                <td>{{ attendance.employee }}</td>
+                <td>{{ attendance.date }}</td>
+                <td>{{ attendance.get_status_display|default:'Sin estatus' }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="3">No hay asistencias registradas.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

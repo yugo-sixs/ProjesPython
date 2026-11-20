@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+{% block title %}Pacientes{% endblock %}
+{% block subtitle %}Pacientes registrados{% endblock %}
+{% block content %}
+<p><a class="button-link" href="{% url 'crear_paciente' %}">Registrar paciente</a></p>
+<table>
+    <thead><tr><th>Nombre</th><th>Tarjetón</th><th>CURP</th><th>Teléfono</th><th>Expediente</th></tr></thead>
+    <tbody>{% for paciente in pacientes %}
+        <tr><td>{{ paciente }}</td><td>{{ paciente.tarjeton|default:"—" }}</td><td>{{ paciente.curp|default:"—" }}</td><td>{{ paciente.telefono|default:"—" }}</td>
+            <td><a href="{% url 'detalle_paciente' paciente.id %}">Abrir expediente</a></td></tr>
+    {% empty %}<tr><td colspan="5">No hay pacientes. Registra el primero.</td></tr>{% endfor %}</tbody>
+</table>
+{% endblock %}

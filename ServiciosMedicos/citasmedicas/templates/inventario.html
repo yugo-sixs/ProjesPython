@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% block title %}Inventario{% endblock %}
+{% block subtitle %}Inventario de medicamentos{% endblock %}
+{% block content %}
+<h3>Existencias</h3>
+<table><thead><tr><th>Medicamento</th><th>Presentación</th><th>Existencia</th><th>Mínimo</th><th>Estado</th></tr></thead><tbody>
+{% for medicamento in medicamentos %}<tr><td>{{ medicamento.nombre }}</td><td>{{ medicamento.presentacion|default:"—" }}</td><td>{{ medicamento.existencia }}</td><td>{{ medicamento.existencia_minima }}</td><td>{% if medicamento.requiere_reabasto %}<b class="error-message">Reabastecer</b>{% else %}Disponible{% endif %}</td></tr>
+{% empty %}<tr><td colspan="5">No hay medicamentos registrados.</td></tr>{% endfor %}</tbody></table>
+<div class="two-columns">
+    <section><h3>Agregar medicamento</h3><form method="post" action="{% url 'crear_medicamento' %}">{% csrf_token %}
+    {{ medicamento_form.non_field_errors }}{% for field in medicamento_form %}<p><label>{{ field.label }}</label><br>{{ field }}{{ field.errors }}</p>{% endfor %}<button>Guardar medicamento</button></form></section>
+    <section><h3>Registrar entrada</h3><form method="post" action="{% url 'entrada_inventario' %}">{% csrf_token %}
+    {{ form.non_field_errors }}{% for field in form %}<p><label>{{ field.label }}</label><br>{{ field }}{{ field.errors }}</p>{% endfor %}<button>Registrar entrada</button></form></section>
+</div>
+<h3>Movimientos recientes</h3><table><thead><tr><th>Fecha</th><th>Medicamento</th><th>Tipo</th><th>Cantidad</th><th>Existencia final</th><th>Usuario</th></tr></thead><tbody>
+{% for movimiento in movimientos %}<tr><td>{{ movimiento.fecha|date:"d/m/Y H:i" }}</td><td>{{ movimiento.medicamento.nombre }}</td><td>{{ movimiento.get_tipo_display }}</td><td>{{ movimiento.cantidad }}</td><td>{{ movimiento.existencia_resultante }}</td><td>{{ movimiento.usuario }}</td></tr>{% empty %}<tr><td colspan="6">Sin movimientos.</td></tr>{% endfor %}</tbody></table>
+{% endblock %}

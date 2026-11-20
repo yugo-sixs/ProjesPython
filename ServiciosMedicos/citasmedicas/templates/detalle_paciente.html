@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+{% block title %}Expediente de {{ paciente }}{% endblock %}
+{% block subtitle %}Expediente médico{% endblock %}
+{% block content %}
+<h3>{{ paciente }}</h3>
+<p><b>CURP:</b> {{ paciente.curp|default:"—" }} &nbsp; <b>Teléfono:</b> {{ paciente.telefono|default:"—" }} &nbsp; <b>Correo:</b> {{ paciente.correo|default:"—" }}</p>
+<p><b>Fecha de nacimiento:</b> {{ paciente.fecha_nacimiento|default:"—" }} &nbsp; <b>Sexo:</b> {{ paciente.sexo|default:"—" }}</p>
+<p><b>Alergias:</b> {{ paciente.alergias|default:"No registradas" }}</p>
+<p><b>Antecedentes:</b> {{ paciente.antecedentes|default:"No registrados" }}</p>
+{% if can_schedule_appointments %}<p><a class="button-link" href="{% url 'crear_cita' %}?paciente={{ paciente.id }}">Programar cita para este paciente</a></p>{% endif %}
+<h3>Citas</h3>
+<table><thead><tr><th>Fecha</th><th>Doctor</th><th>Motivo</th><th>Estado</th></tr></thead><tbody>
+{% for cita in citas %}<tr><td>{{ cita.fecha_cita }} {{ cita.hora_inicio|default:"" }}</td><td>{{ cita.doctor }}</td><td>{{ cita.motivo }}</td><td>{{ cita.get_estado_display }}</td></tr>
+{% empty %}<tr><td colspan="4">Sin citas.</td></tr>{% endfor %}</tbody></table>
+<h3>Historial de consultas</h3>
+{% for consulta in consultas %}
+<section class="record-card">
+    <h4>{{ consulta.fecha_atencion|date:"d/m/Y H:i" }} — {{ consulta.cita.doctor }}</h4>
+    <p><b>Motivo de cita:</b> {{ consulta.cita.motivo }}</p>
+    <p><b>Síntomas:</b> {{ consulta.sintomas }}</p><p><b>Diagnóstico:</b> {{ consulta.diagnostico }}</p>
+    <p><b>Signos:</b> peso {{ consulta.peso_kg|default:"—" }} kg; talla {{ consulta.talla_cm|default:"—" }} cm; presión {{ consulta.presion_arterial|default:"—" }}; temperatura {{ consulta.temperatura_c|default:"—" }} °C</p>
+    {% if consulta.notas %}<p><b>Notas:</b> {{ consulta.notas }}</p>{% endif %}
+    <b>Medicamentos recetados</b>
+    <ul>{% for receta in consulta.recetas.all %}<li>{{ receta.medicamento.nombre }} — {{ receta.dosis }}, {{ receta.frecuencia }}, {{ receta.duracion }}; cantidad {{ receta.cantidad }}. {{ receta.indicaciones }}</li>{% empty %}<li>Sin medicamentos.</li>{% endfor %}</ul>
+    <b>Estudios solicitados</b>
+    <ul>{% for estudio in consulta.estudios.all %}<li>{{ estudio.nombre }} ({{ estudio.get_estatus_display }}){% if estudio.resultado %}: {{ estudio.resultado }}{% endif %} <a href="{% url 'actualizar_resultado_estudio' estudio.id %}">Actualizar resultado</a></li>{% empty %}<li>Sin estudios solicitados.</li>{% endfor %}</ul>
+</section>
+{% empty %}<p>Aún no hay consultas en el expediente.</p>{% endfor %}
+<h3>Atenciones de urgencias</h3>
+<table><thead><tr><th>Folio</th><th>Ingreso</th><th>Triage</th><th>Estado</th><th>Personal médico</th></tr></thead><tbody>
+{% for recepcion in urgencias %}<tr><td>{{ recepcion.folio }}</td><td>{{ recepcion.fecha_ingreso|date:"d/m/Y H:i" }}</td><td>{{ recepcion.get_triage_display|default:"Pendiente de valoración" }}</td><td>{{ recepcion.get_estado_display }}</td><td>{{ recepcion.valorado_por|default:"—" }}</td></tr>
+{% empty %}<tr><td colspan="5">Sin ingresos por urgencias vinculados.</td></tr>{% endfor %}</tbody></table>
+{% endblock %}

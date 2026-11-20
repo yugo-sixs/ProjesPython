@@ -1,0 +1,35 @@
+* { box-sizing: border-box; }
+body { margin: 0; color: #24313b; background: #f2f6f8; font: 16px/1.5 Arial, sans-serif; }
+header { padding: 18px 5%; background: #164b68; color: #fff; }
+#logotipo h1 { margin: 0; color: #fff; font-size: 24px; font-weight: 600; }
+nav { padding: 0 5%; background: #10364d; }
+nav ul { display: flex; flex-wrap: wrap; gap: 4px; margin: 0; padding: 0; list-style: none; }
+nav li { margin: 0; }
+nav a { display: block; padding: 12px; color: #fff; text-decoration: none; }
+nav a:hover { background: #1d607f; }
+#content { max-width: 1200px; min-height: 60vh; margin: 28px auto; padding: 0 16px; }
+.box { padding: 24px; overflow-x: auto; border: 1px solid #dce5ea; border-radius: 8px; background: #fff; box-shadow: 0 3px 14px #18384a12; }
+.title { margin: 0 0 22px; color: #164b68; font-size: 23px; }
+h3, h4 { color: #164b68; }
+table { width: 100%; margin: 16px 0 24px; border-collapse: collapse; }
+th, td { padding: 9px; border: 1px solid #d5e0e6; text-align: left; vertical-align: top; }
+th { background: #e9f1f5; }
+input, select, textarea { width: min(100%, 520px); padding: 9px; border: 1px solid #a9bbc6; border-radius: 4px; font: inherit; }
+textarea { resize: vertical; }
+label { font-weight: 600; }
+form p { margin: 8px 0 14px; text-align: left; }
+button, .button-link { display: inline-block; padding: 9px 15px; border: 0; border-radius: 4px; background: #12628a; color: #fff; font: inherit; text-decoration: none; cursor: pointer; }
+button:hover, .button-link:hover { background: #0c4e70; }
+.form-grid, .two-columns { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.dashboard-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-top: 22px; }
+.dashboard-card { display: flex; flex-direction: column; gap: 6px; padding: 18px; border: 1px solid #d5e0e6; border-radius: 7px; color: #164b68; text-decoration: none; background: #f8fbfd; }
+.dashboard-card:hover { border-color: #12628a; background: #eef6fa; }
+.record-card { margin: 14px 0; padding: 14px; border: 1px solid #d8e3e9; border-radius: 6px; background: #fbfdfe; }
+.error-message, .error { color: #a52323; }
+.warning-message { color: #9a5b00; }
+.urgent-pending { background: #fff9e8; }
+.urgent-overdue { background: #ffe8e8; }
+.urgent-overdue td { border-color: #dfaaaa; }
+.success { color: #176b3a; }
+footer { padding: 18px; background: #164b68; color: #fff; text-align: center; }
+@media (max-width: 640px) { nav ul { display: block; } .box { padding: 16px; } }

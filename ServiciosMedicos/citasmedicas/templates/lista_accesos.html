@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+{% block title %}Permisos y vistas{% endblock %}
+{% block subtitle %}Permisos y vistas por usuario{% endblock %}
+{% block content %}
+<p>Administra el rol laboral y, por separado, los permisos operativos y la página de inicio. El permiso de recepción en Urgencias puede asignarse temporalmente sin cambiar el rol del personal.</p>
+<table>
+    <thead><tr><th>Usuario</th><th>Rol laboral</th><th>Inicio</th><th>Pacientes</th><th>Expedientes</th><th>Citas</th><th>Atención</th><th>Inventario</th><th>Consulta Urgencias</th><th>Registrar ingresos</th><th>Triage</th><th>Configuración</th></tr></thead>
+    <tbody>
+    {% for fila in filas %}
+    <tr>
+        <td>{{ fila.usuario.username }}</td><td>{{ fila.rol }}</td>
+        <td>{% if fila.config %}{{ fila.config.get_vista_inicio_display }}{% else %}Automática según permisos{% endif %}</td>
+        <td>{% if fila.permisos.puede_registrar_pacientes %}Sí{% else %}No{% endif %}</td>
+        <td>{% if fila.permisos.puede_ver_expedientes %}Sí{% else %}No{% endif %}</td>
+        <td>{% if fila.permisos.puede_agendar_citas %}Sí{% else %}No{% endif %}</td>
+        <td>{% if fila.permisos.puede_atender_citas %}Sí{% else %}No{% endif %}</td>
+        <td>{% if fila.permisos.puede_ver_inventario %}Sí{% else %}No{% endif %}</td>
+        <td>{% if fila.permisos.puede_ver_urgencias %}Sí{% else %}No{% endif %}</td>
+        <td>{% if fila.permisos.puede_registrar_urgencias %}Sí{% else %}No{% endif %}</td>
+        <td>{% if fila.permisos.puede_valorar_urgencias %}Sí{% else %}No{% endif %}</td>
+        <td><a href="{% url 'editar_accesos_usuario' fila.usuario.id %}">Configurar</a></td>
+    </tr>
+    {% empty %}<tr><td colspan="12">No hay usuarios activos.</td></tr>{% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+{% block title %}Registrar paciente{% endblock %}
+{% block subtitle %}Registrar paciente{% endblock %}
+{% block content %}
+<form method="post">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <div class="form-grid">
+        {% for field in form %}
+        <p>
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label><br>
+            {{ field }}
+            {% for error in field.errors %}<small class="error-message">{{ error }}</small>{% endfor %}
+        </p>
+        {% endfor %}
+    </div>
+    <button type="submit">Guardar paciente</button>
+    <a href="{% url 'listar_pacientes' %}">Cancelar</a>
+</form>
+{% endblock %}

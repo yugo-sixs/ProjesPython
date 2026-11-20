@@ -1,0 +1,14 @@
+{
+    "python-envs.pythonProjects": [
+        {
+            "path": "SoftwerResiclaje",
+            "envManager": "ms-python.python:venv",
+            "packageManager": "ms-python.python:pip"
+        }
+    ],
+    "cSpell.words": [
+        "inventario",
+        "Resiclaje",
+        "Transaccion"
+    ]
+}

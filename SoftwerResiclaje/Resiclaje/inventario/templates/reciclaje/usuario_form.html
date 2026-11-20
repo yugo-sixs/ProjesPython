@@ -1,0 +1,48 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/sistema.css' %}">
+    <title>{% if object %}Editar{% else %}Crear{% endif %} usuario</title>
+</head>
+<body>
+    {% include "reciclaje/_encabezado.html" %}
+    <main class="container py-4">
+        <h1>{% if object %}Editar usuario {{ object.username }}{% else %}Dar de alta usuario{% endif %}</h1>
+        {% for message in messages %}<div class="alert alert-success">{{ message }}</div>{% endfor %}
+        <p>Asigna grupos para permisos por rol o permisos individuales. Superusuario concede acceso completo a Django.</p>
+        <form method="post" class="card card-body formulario-usuario">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            <div class="tabla-wrapper formulario-tabla-wrapper">
+                <table class="formulario-tabla">
+                    <tbody>
+                        {% for field in form %}
+                            {% cycle '<tr>' '' '' %}
+                                <td>
+                                    <label for="{{ field.id_for_label }}"><strong>{{ field.label }}</strong></label><br>
+                                    {{ field }}
+                                    {% if field.help_text %}<div class="form-text">{{ field.help_text|safe }}</div>{% endif %}
+                                    {% for error in field.errors %}<div class="text-danger">{{ error }}</div>{% endfor %}
+                                </td>
+                            {% cycle '' '' '</tr>' %}
+                        {% endfor %}
+
+{# Cierra la fila automáticamente si el total de campos no es múltiplo de 3 #}
+{% if not form.visible_fields|length|divisibleby:3 %}
+    </tr>
+{% endif %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="d-flex flex-wrap gap-2">
+                <button class="btn btn-primary">Guardar usuario</button>
+                <a class="btn btn-outline-secondary" href="{% url 'usuarios_lista' %}">Cancelar</a>
+            </div>
+        </form>
+    </main>
+</body>
+</html>

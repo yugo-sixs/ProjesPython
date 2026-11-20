@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+{% block title %}Urgencias{% endblock %}
+{% block subtitle %}Bitácora de recepción de urgencias{% endblock %}
+{% block content %}
+<p>La lista muestra ingresos pendientes, triage y tiempo transcurrido desde el registro de ingreso.</p>
+{% if can_register_urgencias %}<p><a class="button-link" href="{% url 'registrar_urgencias' %}">Registrar ingreso</a></p>{% endif %}
+<table>
+    <thead><tr><th>Folio</th><th>Paciente</th><th>Ingreso</th><th>Medio</th><th>Recepción</th><th>Triage / valoración</th><th>Estado</th><th>Control 12 horas</th><th>Acción</th></tr></thead>
+    <tbody>
+    {% for recepcion in recepciones %}
+    <tr class="{% if recepcion.excedio_12_horas %}urgent-overdue{% elif not recepcion.fecha_valoracion %}urgent-pending{% endif %}">
+        <td>{{ recepcion.folio }}</td>
+        <td>{% if recepcion.paciente %}<a href="{% url 'detalle_paciente' recepcion.paciente_id %}">{{ recepcion.nombre_completo }}</a>{% else %}{{ recepcion.nombre_completo }}{% endif %}</td>
+        <td>{{ recepcion.fecha_ingreso|date:"d/m/Y H:i" }}</td>
+        <td>{{ recepcion.get_medio_ingreso_display }}{% if recepcion.medio_ingreso == 'AMBULANCIA' %}<br><small>{{ recepcion.ambulancia_institucion }} · {{ recepcion.ambulancia_unidad }}</small>{% endif %}</td>
+        <td>{{ recepcion.registrado_por }}</td>
+        <td>
+            {% if recepcion.fecha_valoracion %}
+                {{ recepcion.get_triage_display }} · {{ recepcion.valorado_por }}<br>
+                <small>Valoración {{ recepcion.fecha_valoracion|date:"d/m/Y H:i" }} ({{ recepcion.minutos_hasta_valoracion }} min desde ingreso)</small>
+            {% else %}<b>Pendiente de valoración médica inmediata</b>{% endif %}
+        </td>
+        <td>{{ recepcion.get_estado_display }}</td>
+        <td>
+            {% if recepcion.fecha_salida %}Cerrado {{ recepcion.fecha_salida|date:"d/m/Y H:i" }}
+            {% elif recepcion.excedio_12_horas %}<b class="error-message">Superó 12 horas; requiere revisión</b>
+            {% elif recepcion.minutos_restantes <= 120 %}<b class="warning-message">{{ recepcion.minutos_restantes }} min restantes</b>
+            {% else %}{{ recepcion.minutos_restantes }} min restantes{% endif %}
+        </td>
+        <td>{% if is_doctor and can_triage_urgencias %}<a href="{% url 'valorar_urgencias' recepcion.id %}">Valorar / actualizar</a>{% endif %}</td>
+    </tr>
+    {% empty %}<tr><td colspan="9">Todavía no hay ingresos registrados.</td></tr>{% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+{% block title %}Resultado de estudio{% endblock %}
+{% block subtitle %}Actualizar estudio solicitado{% endblock %}
+{% block content %}
+<p><b>Paciente:</b> {{ estudio.consulta.cita.paciente }} &nbsp; <b>Estudio:</b> {{ estudio.nombre }}</p>
+<form method="post">{% csrf_token %}{{ form.non_field_errors }}
+    {% for field in form %}<p><label>{{ field.label }}</label><br>{{ field }}{{ field.errors }}</p>{% endfor %}
+    <button type="submit">Guardar resultado</button>
+</form>
+{% endblock %}

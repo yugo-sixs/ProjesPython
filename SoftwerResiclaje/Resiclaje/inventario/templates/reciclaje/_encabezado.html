@@ -1,0 +1,21 @@
+{% load static %}
+<header class="sistema-header">
+    <a class="sistema-marca" href="{% if user.is_authenticated %}{% url 'corte_diario' %}{% else %}{% url 'login' %}{% endif %}" aria-label="Inicio del Sistema de Reciclaje">
+        <img src="{% static 'img/marca-sistema.jpeg' %}" alt="Logotipo del sistema">
+        <span>Sistema de Reciclaje</span>
+    </a>
+    {% if user.is_authenticated %}
+    <nav class="sistema-nav" aria-label="Navegación principal">
+        <a href="{% url 'corte_diario' %}">Corte diario</a>
+        <a href="{% url 'registrar_compra' %}">Registrar compra</a>
+        <a href="{% url 'registrar_venta' %}">Registrar venta</a>
+        <a href="{% url 'kardex' %}">Kardex</a>
+        <a href="{% url 'ajustar_inventario' %}">Ajustes</a>
+        <a href="{% url 'auditoria_empleados' %}">Auditoría</a>
+        {% if user.is_superuser or user.rol == 'admin' or user.rol == 'supervisor' %}
+        <a href="{% url 'usuarios_lista' %}">Usuarios</a>
+        <a href="{% url 'grupos_lista' %}">Grupos y permisos</a>
+        {% endif %}
+    </nav>
+    {% endif %}
+</header>

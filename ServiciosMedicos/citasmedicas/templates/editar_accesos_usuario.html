@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+{% block title %}Permisos de {{ usuario_objetivo.username }}{% endblock %}
+{% block subtitle %}Permisos y vista de usuario{% endblock %}
+{% block content %}
+<h3>{{ usuario_objetivo.username }}</h3>
+<p>El rol laboral y los permisos se configuran por separado. Solo administración puede cambiarlos. El permiso de recepción en Urgencias puede habilitarse durante una guardia sin cambiar si la persona es doctora, enfermera u otro personal.</p>
+<form method="post">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    {% for field in form %}
+    <p class="access-field">
+        {% if field.name == 'grupos_permiso' %}
+            <strong>{{ field.label }}</strong><br>{{ field }}
+        {% elif field.field.widget.input_type == 'checkbox' %}
+            <label>{{ field }} {{ field.label }}</label>
+        {% else %}
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label><br>{{ field }}
+        {% endif %}
+        {% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
+        {% for error in field.errors %}<small class="error-message">{{ error }}</small>{% endfor %}
+    </p>
+    {% endfor %}
+    <button type="submit">Guardar permisos</button>
+    <a href="{% url 'crear_usuario' %}">Cancelar</a>
+</form>
+{% endblock %}
