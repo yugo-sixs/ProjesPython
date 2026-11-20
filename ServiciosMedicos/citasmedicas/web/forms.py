@@ -209,12 +209,27 @@ class PersonalForm(forms.ModelForm):
             'apellidomaterno', 'telefono', 'numempleado',
             'cedula_profesional', 'especialidad', 'correo',
         ]
+        labels = {'especialidad': 'Especialidad (solo para doctores)'}
+        help_texts = {'especialidad': 'Obligatoria para doctores; opcional para enfermería y demás personal.'}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # La especialidad es un dato opcional en el modelo para el resto del personal.
+        # La obligación clínica para doctores se valida con un mensaje específico en clean().
+        self.fields['especialidad'].required = False
 
     def clean(self):
         cleaned_data = super().clean()
         tipo = cleaned_data.get('tipo_personal')
         if tipo == Personal.DOCTOR and not cleaned_data.get('usuario'):
             self.add_error('usuario', 'Asocia una cuenta para que este personal pueda iniciar sesión y operar el módulo asignado.')
+        usuario = cleaned_data.get('usuario')
+        if usuario:
+            usuarios_asignados = Personal.objects.filter(usuario=usuario)
+            if self.instance.pk:
+                usuarios_asignados = usuarios_asignados.exclude(pk=self.instance.pk)
+            if usuarios_asignados.exists():
+                self.add_error('usuario', 'Esta cuenta ya está vinculada a otro registro de personal.')
         for field, label in [('numempleado', 'número de empleado'), ('cedula_profesional', 'cédula profesional')]:
             value = cleaned_data.get(field)
             if value:

@@ -1,0 +1,12 @@
+{% load static %}<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}"><title>Registrar compra</title><link rel="stylesheet" href="{% static 'css/sistema.css' %}"></head>
+<body>
+    {% include "reciclaje/_encabezado.html" %}<main class="container py-4"><h1>Registrar compra</h1>
+{% for message in messages %}<div class="alert alert-success">{{ message }}</div>{% endfor %}
+<form method="post" class="card card-body">{% csrf_token %}{{ form.non_field_errors }}{{ detalle_formset.non_form_errors }}
+<div class="mb-3"><label class="form-label" for="{{ form.socio.id_for_label }}">Proveedor (opcional)</label>{{ form.socio }}{{ form.socio.errors }}</div>
+{{ detalle_formset.management_form }}<div id="lineas">{% for linea in detalle_formset %}<fieldset class="border rounded p-3 mb-3"><legend class="h6">Material {{ forloop.counter }}</legend>{{ linea.as_p }}</fieldset>{% endfor %}</div>
+<template id="linea-vacia"><fieldset class="border rounded p-3 mb-3"><legend class="h6">Nuevo material</legend>{{ detalle_formset.empty_form.as_p }}</fieldset></template>
+<button type="button" class="btn btn-outline-secondary mb-3" onclick="agregarLinea()">Agregar material</button>
+<div class="d-flex gap-2"><button class="btn btn-success">Guardar compra</button><a class="btn btn-outline-secondary" href="{% url 'corte_diario' %}">Corte diario</a></div></form></main>
+<script>function agregarLinea(){const total=document.getElementById('id_detalles-TOTAL_FORMS');const html=document.getElementById('linea-vacia').innerHTML.replaceAll('__prefix__',total.value);document.getElementById('lineas').insertAdjacentHTML('beforeend',html);total.value=Number(total.value)+1;}</script></body></html>
